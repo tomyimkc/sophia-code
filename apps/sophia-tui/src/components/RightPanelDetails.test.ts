@@ -168,7 +168,7 @@ test("to-do details include every explicit item rather than the compact-panel su
   );
   const text = rows.map((item) => item.text).join("\n");
   items.forEach((item) => assert.match(text, new RegExp(item.content)));
-  assert.match(text, /12 explicit items/);
+  assert.match(text, /12 assigned items/);
 });
 
 test("agent details expose observable A2A and team receipts without claiming hidden reasoning", () => {

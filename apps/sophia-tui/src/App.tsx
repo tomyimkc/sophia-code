@@ -72,6 +72,10 @@ import {
 import { CodeBridge, bridgeEventText, kernelApprovalId, type BridgeEvent } from "./lib/bridge.js";
 import { formatShellTranscript, parseShellInvocation } from "./lib/shellCommand.js";
 import {
+  browserLoginProviderForModel,
+  formatProviderLoginEvent,
+} from "./lib/providerAuth.js";
+import {
   allCommands,
   commandBadges,
   editionAllowsCommand,
@@ -2453,7 +2457,9 @@ export function App(props: AppProps): React.ReactElement {
         const requestId = uid("resume-tasks");
         teamResumeRequestRef.current.add(requestId);
         bridge.listTasks(undefined, result.session, undefined, requestId);
-        bridge.replayCompoundWorkflows(result.session);
+        if (editionAllowsCommand("workflow")) {
+          bridge.replayCompoundWorkflows(result.session);
+        }
       }
       setStatus(
         !result.ok
@@ -4250,6 +4256,28 @@ export function App(props: AppProps): React.ReactElement {
         if (node) dispatchWorkflow({ type: "event", event: { ...node, logs: Array.isArray(detail.logs) ? detail.logs as string[] : node.logs, artifacts: Array.isArray(ev.artifacts) ? ev.artifacts as string[] : node.artifacts } });
         return;
       }
+      if (t === "provider_login") {
+        const text = formatProviderLoginEvent(ev as Record<string, unknown>);
+        const ready = ev.ready === true;
+        const modelSpec = String(ev.modelSpec || "").trim();
+        push({
+          role: "system",
+          meta: "login",
+          text,
+          ok: ev.ok !== false,
+        });
+        if (ready && modelSpec) {
+          setModel(modelSpec);
+          noteUserChanged("model");
+          pushSettings({ model: modelSpec, onboarding: { providerConfirmed: true } });
+          setStatus(`signed in · model → ${modelSpec}`);
+        } else if (String(ev.status || "") === "starting") {
+          setStatus("waiting for browser sign-in…");
+        } else {
+          setStatus(ready ? "signed in" : "login needs attention");
+        }
+        return;
+      }
       if (t === "provider_health") {
         setRuntimeSnapshot((current) => applyProviderHealth(current, ev));
         if (String(ev.status || "") === "probing") {
@@ -4426,10 +4454,16 @@ export function App(props: AppProps): React.ReactElement {
           workflowOwned: owned("workflowMode"),
           agiWorkflowOwned: agiWorkflowOwnedRef.current,
         });
-        const activeAgiWorkflowMode =
-          reconciledWorkflowModes.agiWorkflowMode;
-        const activeWorkflowMode =
-          reconciledWorkflowModes.workflowMode as DynamicWorkflowMode;
+        // Kernel defaults workflowMode to "auto". Open edition has no workflow
+        // controller; adopting that snapshot dispatched `/workflow` and drew
+        // the Progress map over the coding CLI.
+        const openEditionSolo = !editionAllowsCommand("workflow");
+        const activeAgiWorkflowMode = openEditionSolo
+          ? "off"
+          : reconciledWorkflowModes.agiWorkflowMode;
+        const activeWorkflowMode = openEditionSolo
+          ? "off"
+          : reconciledWorkflowModes.workflowMode as DynamicWorkflowMode;
         setAgiWorkflowMode(activeAgiWorkflowMode);
         agiWorkflowModeRef.current = activeAgiWorkflowMode;
         setWorkflowMode(activeWorkflowMode);
@@ -4727,7 +4761,11 @@ export function App(props: AppProps): React.ReactElement {
         // Restore only durable compound graph receipts. This deliberately does
         // not call session_load: transcript resume remains an explicit user
         // action, while a bridge restart can reconstruct the right-side graph.
-        bridge.replayCompoundWorkflows(sessionRef.current || "tui-default");
+        // Open edition has no workflow controller; replaying here used to
+        // surface `Error · /workflow is not part of Sophia Code`.
+        if (editionAllowsCommand("workflow")) {
+          bridge.replayCompoundWorkflows(sessionRef.current || "tui-default");
+        }
         // Hydrate UI from disk directly (not via giant NDJSON session_load).
         // Kernel still reads the same file for history= on the next run.
         // A new session starts EMPTY. Auto-hydrating the previous transcript
@@ -6514,6 +6552,25 @@ export function App(props: AppProps): React.ReactElement {
   }, [effort, imageProvider, keymap, model, mode, permission, themeName, thinkingVisibility]);
   openPickerRef.current = openPicker;
 
+  const startProviderLogin = useCallback((provider: string) => {
+    const spec = browserLoginProviderForModel(provider) || provider.trim().toLowerCase();
+    push({
+      role: "system",
+      meta: "login",
+      text: `Starting ${spec} browser sign-in via the official CLI…`,
+    });
+    try {
+      bridgeRef.current?.providerLogin({ action: spec });
+      setStatus(`waiting for ${spec} browser sign-in…`);
+    } catch {
+      push({
+        role: "system",
+        text: "bridge is down — cannot start provider login",
+        ok: false,
+      });
+    }
+  }, [push]);
+
   const applyPickerValue = useCallback(
     (kind: PickerKind, value: string) => {
       if (kind === "model") {
@@ -6600,6 +6657,10 @@ export function App(props: AppProps): React.ReactElement {
           /* health is advisory */
         }
         push({ role: "system", text: `model → ${value}` });
+        const loginProvider = browserLoginProviderForModel(value);
+        if (loginProvider) startProviderLogin(loginProvider);
+      } else if (kind === "login") {
+        startProviderLogin(value);
       } else if (kind === "effort") {
         const eff = normalizeEffort(value);
         if (!eff) {
@@ -6689,12 +6750,14 @@ export function App(props: AppProps): React.ReactElement {
         }
         push({
           role: "system",
-          text: "First-run setup saved locally. Change choices later with /model, /permissions, /a2a, or /workflow.",
+          text: editionAllowsCommand("workflow")
+            ? "First-run setup saved locally. Change choices later with /model, /login, /permissions, /a2a, or /workflow."
+            : "First-run setup saved locally. Change the model later with /model or /login.",
         });
       }
       setStatus("ready");
     },
-    [applyResponseStyle, push, openPicker],
+    [applyResponseStyle, push, openPicker, startProviderLogin],
   );
 
   const applyPickerValueRef = useRef(applyPickerValue);
@@ -9240,6 +9303,32 @@ export function App(props: AppProps): React.ReactElement {
           /* health is advisory */
         }
         push({ role: "system", text: `model → ${nextModel}` });
+        const loginProvider = browserLoginProviderForModel(nextModel);
+        if (loginProvider) startProviderLogin(loginProvider);
+        return true;
+      }
+      if (name === "setup") {
+        openPicker("model");
+        return true;
+      }
+      if (name === "login") {
+        const provider = args.trim().toLowerCase();
+        if (!provider) {
+          try {
+            bridgeRef.current?.providerLogin({ action: "status" });
+          } catch { /* status is advisory */ }
+          openPicker("login");
+          return true;
+        }
+        if (provider === "status") {
+          try {
+            bridgeRef.current?.providerLogin({ action: "status" });
+          } catch {
+            push({ role: "system", text: "login status unavailable (bridge down)", ok: false });
+          }
+          return true;
+        }
+        startProviderLogin(provider);
         return true;
       }
       if (name === "runtime") {
@@ -9556,6 +9645,7 @@ export function App(props: AppProps): React.ReactElement {
       rows,
       runtimeSnapshot,
       session,
+      startProviderLogin,
       status,
       terminalCapabilities,
       themeName,
@@ -11909,6 +11999,7 @@ export function App(props: AppProps): React.ReactElement {
   // is too narrow to keep the transcript legible beside a 30-column panel. The
   // transcript then keeps the full width (paneWidth == contentWidth).
   const panelVisible =
+    editionAllowsCommand("panel") &&
     showPanel &&
     !sessionPicker &&
     !showGraph &&

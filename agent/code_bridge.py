@@ -5103,6 +5103,8 @@ class CodeBridge:
                     self._handle_mcp_timeouts(cmd)
                 elif name == "provider_health":
                     self._handle_provider_health(cmd)
+                elif name in {"provider_login", "login"}:
+                    self._handle_provider_login(cmd)
                 elif name == "model_connection":
                     self._handle_model_connection(cmd)
                 elif name == "hooks":
@@ -6197,6 +6199,59 @@ class CodeBridge:
         threading.Thread(
             target=probe,
             name="code-bridge-provider-health",
+            daemon=True,
+        ).start()
+
+    def _handle_provider_login(self, cmd: dict) -> None:
+        """Launch official CLI browser login (grok/codex). Never emit secrets."""
+        from agent.provider_auth import list_login_providers, run_provider_login
+
+        action = str(cmd.get("action") or cmd.get("provider") or "status").strip().casefold()
+        request_id = cmd.get("requestId", cmd.get("requestID"))
+        if action in {"", "status", "list"}:
+            self.emit({
+                "type": "provider_login",
+                "ok": True,
+                "status": "status",
+                "providers": list_login_providers(),
+                "requestId": request_id,
+                "canClaimAGI": False,
+            })
+            return
+        self.emit({
+            "type": "provider_login",
+            "ok": True,
+            "status": "starting",
+            "provider": action,
+            "detail": "opening the official provider sign-in page in your browser",
+            "requestId": request_id,
+            "canClaimAGI": False,
+        })
+
+        def login() -> None:
+            try:
+                result = run_provider_login(action)
+                self.emit({
+                    "type": "provider_login",
+                    "status": "complete" if result.get("ready") else "error",
+                    "requestId": request_id,
+                    **result,
+                })
+            except Exception as exc:  # noqa: BLE001 - login must not kill the TUI
+                self.emit({
+                    "type": "provider_login",
+                    "ok": False,
+                    "status": "error",
+                    "provider": action,
+                    "ready": False,
+                    "detail": f"{type(exc).__name__}: login did not finish",
+                    "requestId": request_id,
+                    "canClaimAGI": False,
+                })
+
+        threading.Thread(
+            target=login,
+            name="code-bridge-provider-login",
             daemon=True,
         ).start()
 
@@ -8136,6 +8191,19 @@ class CodeBridge:
         from agent.edition import edition_unavailable_message, is_oss_edition
 
         if is_oss_edition():
+            action_value = str(cmd.get("action") or "replay").strip().lower()
+            # Bridge-ready replay is a read of durable receipts. Failing it as
+            # a user-visible OpenEdition error made every OSS boot show
+            # `Error · /workflow is not part of Sophia Code`.
+            if action_value in {"replay", "status", "events"}:
+                self.emit({
+                    "type": "compound_workflow_status",
+                    "ok": True,
+                    "action": action_value,
+                    "workflows": [],
+                    "canClaimAGI": False,
+                })
+                return
             self.error(
                 edition_unavailable_message("workflow"),
                 error_type="OpenEdition",

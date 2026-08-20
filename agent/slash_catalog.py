@@ -471,8 +471,20 @@ _COMMANDS: tuple[SlashCommand, ...] = (
                                   "candidateOnly; canClaimAGI:false. Args: {args}")),
 
     # ── Auth / install / IDE ─────────────────────────────────────────────
-    SlashCommand("login", "Auth setup hints (provider keys)", "auth",
-                 collapse_chat=False),
+    SlashCommand(
+        "login",
+        "Sign in to a subscription provider (Grok/xAI or Codex) via its official CLI browser login",
+        "auth",
+        hint="/login [status|grok|codex]",
+        collapse_chat=False,
+    ),
+    SlashCommand(
+        "setup",
+        "Choose the LLM provider for this device and sign in if that provider uses a browser login",
+        "auth",
+        hint="/setup",
+        collapse_chat=False,
+    ),
     SlashCommand("logout", "Clear session auth hints", "auth", collapse_chat=False, support_state="unsupported"),
     SlashCommand("init", "Initialize project agent docs", "setup", kind="prompt",
                  prompt_template="Initialize or refresh AGENTS.md and supported project guidance "
@@ -821,7 +833,13 @@ _ARGUMENT_SCHEMAS: dict[str, SlashArgumentSchema] = {
     ),
     "logic": _schema("/logic [off|basic|strict]",
                      _arg("mode", choices=("off", "basic", "strict")), max_args=1),
-    "login": _schema("/login [provider]", _arg("provider"), max_args=1),
+    "login": _schema(
+        "/login [status|grok|codex]",
+        _arg("provider", choices=("status", "grok", "codex")),
+        max_args=1,
+        examples=("/login", "/login grok", "/login status"),
+    ),
+    "setup": _schema("/setup", max_args=0),
     "update": _schema("/update [repo-path]", _arg("repo_path", value_type="path", rest=True), max_args=1),
     "graph": _schema("/graph [entity]", _arg("entity", rest=True), max_args=1),
     "panel": _schema(
@@ -885,6 +903,7 @@ def argument_schema_for(command: SlashCommand | str) -> SlashArgumentSchema:
 
 _TUI_RUN_LOCAL = frozenset({
     "help", "clear", "exit", "status", "harness", "refine", "statusline", "theme", "model", "runtime",
+    "login", "setup",
     "fallback-model", "conscience",
     "effort", "ultramode", "deepmode", "mode", "permissions", "version",
     "doctor", "cost", "stats", "usage", "okf", "resume", "continue", "session",

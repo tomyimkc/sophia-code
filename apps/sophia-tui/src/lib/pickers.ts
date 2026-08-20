@@ -276,6 +276,11 @@ export const KEYMAP_OPTIONS: PickerOption[] = [
   { value: "vim", label: "vim", hint: "explicit insert/normal mode editing" },
 ];
 
+export const LOGIN_OPTIONS: PickerOption[] = [
+  { value: "grok", label: "Grok", hint: "xAI subscription · official `grok login` opens the browser" },
+  { value: "codex", label: "Codex", hint: "ChatGPT subscription · official `codex login` opens the browser" },
+];
+
 export const IMAGE_PROVIDER_OPTIONS: PickerOption[] = [
   { value: "none", label: "none", hint: "image generation disabled" },
   { value: "grok-cli", label: "grok-cli", hint: "delegate to the locally configured Grok CLI; approval still required" },
@@ -300,7 +305,8 @@ export type PickerKind =
   | "benchMode"
   | "thinking"
   | "keymap"
-  | "imageProvider";
+  | "imageProvider"
+  | "login";
 
 export function optionsFor(kind: PickerKind): PickerOption[] {
   switch (kind) {
@@ -324,6 +330,8 @@ export function optionsFor(kind: PickerKind): PickerOption[] {
       return KEYMAP_OPTIONS;
     case "imageProvider":
       return IMAGE_PROVIDER_OPTIONS;
+    case "login":
+      return LOGIN_OPTIONS;
   }
 }
 
@@ -402,5 +410,7 @@ export function titleFor(kind: PickerKind): string {
       return "Select keymap";
     case "imageProvider":
       return "Select image provider";
+    case "login":
+      return "Sign in to a subscription provider";
   }
 }

@@ -1887,6 +1887,22 @@ export class CodeBridge extends EventEmitter {
     }, options.requestId ? { requestId: options.requestId } : {});
   }
 
+  providerLogin(options: {
+    action?: string;
+    provider?: string;
+    requestId?: string;
+  } = {}): ReliableBridgeCommand {
+    const action = options.action || options.provider || "status";
+    return this.sendReliable(
+      {
+        cmd: "provider_login",
+        action,
+        provider: action,
+      },
+      options.requestId ? { requestId: options.requestId } : {},
+    );
+  }
+
   providerHealth(options: {
     providers?: string[];
     includeModels?: boolean;

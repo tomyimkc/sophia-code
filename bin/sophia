@@ -4,7 +4,52 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export SOPHIA_EDITION="${SOPHIA_EDITION:-oss}"
 export SOPHIA_RUNTIME_ROOT="${SOPHIA_RUNTIME_ROOT:-$ROOT}"
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+# `sophia lite` is an alias for this open-edition binary. Strip the token so
+# it is not treated as a prompt.
+if [[ "${1:-}" == "lite" || "${1:-}" == "--lite" ]]; then
+  shift
+fi
+if [[ -z "${SOPHIA_UI:-}" ]]; then
+  _lite_cli=0
+  _skip_value=0
+  for _a in "$@"; do
+    if [[ "$_skip_value" == 1 ]]; then
+      _skip_value=0
+      continue
+    fi
+    case "$_a" in
+      --|-p|--prompt|--json|--streaming-json|-h|--help|--auto|--yolo|--full-access|--readonly|--no-tools|--trace|--show-thinking|--capture-thinking|--logic-judge|-p=*|--prompt=*|--json=*|--streaming-json=*)
+        _lite_cli=1
+        break
+        ;;
+      -m|--model|--adapter|--server|--cwd|--max-steps|--session|--config|--mode|--effort|--temperature|--temperature-preset|--permission|--thinking-log|--top-p|--top-k)
+        _skip_value=1
+        ;;
+      -*)
+        ;;
+      *)
+        _lite_cli=1
+        break
+        ;;
+    esac
+  done
+  if [[ "$_lite_cli" == 1 ]]; then
+    export SOPHIA_UI=python
+  else
+    export SOPHIA_UI=tui
+  fi
+  unset _lite_cli _skip_value _a
+fi
+if [[ "${SOPHIA_UI}" == python ]]; then
+  exec python3 -B -P -m sophia.cli "$@"
+fi
 TUI="$ROOT/apps/sophia-tui/dist/index.js"
+TUI_SRC="$ROOT/apps/sophia-tui"
+if [[ -f "$TUI_SRC/package.json" && ! -d "$TUI_SRC/node_modules/react" ]]; then
+  echo "sophia: TUI dependencies missing — run: (cd apps/sophia-tui && npm ci)" >&2
+  exit 1
+fi
 if [[ ! -f "$TUI" ]]; then
   echo "sophia: build the TUI first: (cd apps/sophia-tui && npm ci && npm run build)" >&2
   exit 1

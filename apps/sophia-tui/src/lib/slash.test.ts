@@ -14,6 +14,7 @@ import {
   commandsForEdition,
   commandUsage,
   completeSlashSelection,
+  editionAllowsCommand,
   editionUnavailableMessage,
   planSlashCommandPaste,
   productDefaults,
@@ -67,8 +68,20 @@ test("oss edition hides conscience, effort, agi, a2a, workflow, and flow surface
   assert.equal(names.has("model"), true);
   assert.equal(names.has("permissions"), true);
   assert.equal(names.has("plan"), true);
+  assert.equal(names.has("login"), true);
+  assert.equal(names.has("setup"), true);
   assert.equal(editionUnavailableMessage("workflow").includes("/workflow"), true);
   assert.equal(editionUnavailableMessage("agi").includes("AGI"), false);
+  const previous = process.env.SOPHIA_EDITION;
+  process.env.SOPHIA_EDITION = "oss";
+  try {
+    assert.equal(editionAllowsCommand("workflow"), false);
+    assert.equal(editionAllowsCommand("panel"), false);
+    assert.equal(editionAllowsCommand("model"), true);
+  } finally {
+    if (previous === undefined) delete process.env.SOPHIA_EDITION;
+    else process.env.SOPHIA_EDITION = previous;
+  }
 });
 
 test("resolve: /resume tui-default preserves the session-name arg", () => {

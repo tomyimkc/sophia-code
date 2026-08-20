@@ -8,35 +8,46 @@ A2A, workflow/flow, or AGI-shaped planner surfaces.
 
 `candidateOnly: true` · `canClaimAGI: false`
 
+## Install
+
+```bash
+git clone https://github.com/tomyimkc/sophia-code.git
+cd sophia-code
+./tools/install_sophia_lite.sh   # npm ci + build, then links ~/.local/bin/sophia-lite
+export PATH="$HOME/.local/bin:$PATH"
+sophia-lite                      # TUI
+sophia-lite -p "summarize this repo" --mock   # Python CLI (`-p` is --prompt)
+```
+
 ## What you get
 
 - Chat, streaming, slash commands, sessions
 - Tools: read / write / edit / bash (permission-gated)
-- `/model`, `/permissions`, `/plan`, `/compact`, `/resume`
+- `/model`, `/permissions`, `/plan`, `/compact`, `/resume`, `/login`, `/setup`
+- Ink TUI **and** Python CLI (`sophia-lite -p` / `--json`)
 - MCP and skills
-- Bring your own model keys
+- Bring your own model keys, or a Grok subscription via official `grok login`
 
 ## What this edition does not include
 
 Conscience delivery gate, `/effort` / ultramode, A2A, dynamic workflows,
 GoT/Flow Studio, and the AGI-shaped planner. Those stay in the full Sophia TUI.
 
-## Run
+## Grok subscription
+
+On a new device pick **Grok** at first-run (or `/setup` / `/model grok`), then
+`/login grok`. That launches the official `grok login --oauth` browser sign-in.
+Tokens stay in `~/.grok/auth.json`. This tree does not implement xAI OAuth.
+
+TUI permission is `--permission`. CLI `-p` is the prompt.
+
+## Run from the clone
 
 ```bash
-# kernel on PYTHONPATH (repo root)
-python3 -m agent.code_bridge   # used automatically by the TUI
-
-cd apps/sophia-tui
-npm ci
-npm run build
-node dist/index.js --mock
-```
-
-Or from the repo root after a TUI build:
-
-```bash
-./bin/sophia --mock
+cd apps/sophia-tui && npm ci && npm run build && cd ../..
+./bin/sophia-lite --mock
+./bin/sophia lite
+./bin/sophia-lite -p "summarize this repo" --mock
 ```
 
 `SOPHIA_EDITION=oss` is baked in. Do not set it to `full` in this tree; the

@@ -36,7 +36,12 @@ SOPHIA_UI=tui sophia # require the built TUI (fails with a diagnostic if absent)
 SOPHIA_DEV=1 SOPHIA_UI=tui sophia # explicit local source mode
 sophia-tui --mock
 sophia-tui --model zai
+sophia lite                 # open-edition TUI (also: sophia-lite)
+sophia lite -p "summarize this repo" --mock   # open-edition Python CLI
 ```
+
+On a new device, first-run or `/setup` picks the LLM. `/login grok` opens the
+official Grok CLI browser sign-in so a Grok subscription can drive the session.
 
 The advisory TUI workflow performs a clean `npm ci`, typecheck, unit-test run,
 and ordinary build on `ubuntu-latest`, `macos-latest`, and `windows-latest`.

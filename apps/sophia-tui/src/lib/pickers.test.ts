@@ -62,6 +62,15 @@ test("benchMode picker offers exactly the knowledge and tool-use benchmarks", ()
   assert.equal(titleFor("benchMode"), "Select benchmark mode");
 });
 
+test("login picker offers Grok and Codex subscription browser sign-in", () => {
+  assert.deepEqual(
+    optionsFor("login").map(({ value }) => value),
+    ["grok", "codex"],
+  );
+  assert.equal(titleFor("login"), "Sign in to a subscription provider");
+  assert.equal(pickerKindFor("login"), "login");
+});
+
 test("picker command registry covers every picker-backed slash and alias", () => {
   assert.deepEqual([...PICKER_SLASH_COMMANDS].sort(), Object.keys(PICKER_COMMAND_KINDS).sort());
   assert.equal(pickerKindFor("permissions"), "permission");

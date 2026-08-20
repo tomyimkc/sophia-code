@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "hash": "f8b1238276742cf36b5bf1a635453b324f17511e5d9d4fba01e347c4a31fbc80",
+  "hash": "831941e97f7d483e2600d6370ab1c06602527e3fc90a3da0596b02372412210f",
   "source": "sophia-code-native",
   "commands": [
     {
@@ -5339,14 +5339,14 @@
     },
     {
       "name": "login",
-      "description": "Auth setup hints (provider keys)",
+      "description": "Sign in to a subscription provider (Grok/xAI or Codex) via its official CLI browser login",
       "category": "auth",
       "kind": "local",
       "support_state": "supported",
       "aliases": [],
       "deprecated_aliases": [],
       "badges": [],
-      "hint": "",
+      "hint": "/login [status|grok|codex]",
       "collapse_chat": false,
       "prompt_template": "",
       "target": "",
@@ -5356,7 +5356,7 @@
       ],
       "slash": "/login",
       "arguments": {
-        "usage": "/login [provider]",
+        "usage": "/login [status|grok|codex]",
         "min_args": 0,
         "max_args": 1,
         "positionals": [
@@ -5364,19 +5364,29 @@
             "name": "provider",
             "value_type": "string",
             "required": false,
-            "choices": [],
+            "choices": [
+              "status",
+              "grok",
+              "codex"
+            ],
             "rest": false
           }
         ],
-        "examples": [],
+        "examples": [
+          "/login",
+          "/login grok",
+          "/login status"
+        ],
         "custom_parser": false
       },
       "client_execution": {
         "tui": {
-          "execution_state": "info",
-          "handler": "",
-          "handler_names": [],
-          "note": "Information only in this TUI build; no state change is claimed."
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "login"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
         },
         "terminal": {
           "execution_state": "info",
@@ -5385,16 +5395,71 @@
           "note": "Information only in the terminal REPL; no state change is claimed."
         }
       },
-      "execution_state": "info",
+      "execution_state": "implemented_local",
       "help": {
-        "usage": "/login [provider]",
+        "usage": "/login [status|grok|codex]",
         "category_id": "auth",
         "category_label": "Access",
         "badges": [
-          "info"
+          "local"
         ],
-        "availability": "info",
-        "note": "Information only in this TUI build; no state change is claimed.",
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "setup",
+      "description": "Choose the LLM provider for this device and sign in if that provider uses a browser login",
+      "category": "auth",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/setup",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "oss",
+        "full"
+      ],
+      "slash": "/setup",
+      "arguments": {
+        "usage": "/setup",
+        "min_args": 0,
+        "max_args": 0,
+        "positionals": [],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "setup"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/setup",
+        "category_id": "auth",
+        "category_label": "Access",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
         "deprecated_aliases": []
       }
     },
@@ -11891,14 +11956,14 @@
     "auth": [
       {
         "name": "login",
-        "description": "Auth setup hints (provider keys)",
+        "description": "Sign in to a subscription provider (Grok/xAI or Codex) via its official CLI browser login",
         "category": "auth",
         "kind": "local",
         "support_state": "supported",
         "aliases": [],
         "deprecated_aliases": [],
         "badges": [],
-        "hint": "",
+        "hint": "/login [status|grok|codex]",
         "collapse_chat": false,
         "prompt_template": "",
         "target": "",
@@ -11908,7 +11973,7 @@
         ],
         "slash": "/login",
         "arguments": {
-          "usage": "/login [provider]",
+          "usage": "/login [status|grok|codex]",
           "min_args": 0,
           "max_args": 1,
           "positionals": [
@@ -11916,19 +11981,29 @@
               "name": "provider",
               "value_type": "string",
               "required": false,
-              "choices": [],
+              "choices": [
+                "status",
+                "grok",
+                "codex"
+              ],
               "rest": false
             }
           ],
-          "examples": [],
+          "examples": [
+            "/login",
+            "/login grok",
+            "/login status"
+          ],
           "custom_parser": false
         },
         "client_execution": {
           "tui": {
-            "execution_state": "info",
-            "handler": "",
-            "handler_names": [],
-            "note": "Information only in this TUI build; no state change is claimed."
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "login"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
           },
           "terminal": {
             "execution_state": "info",
@@ -11937,16 +12012,71 @@
             "note": "Information only in the terminal REPL; no state change is claimed."
           }
         },
-        "execution_state": "info",
+        "execution_state": "implemented_local",
         "help": {
-          "usage": "/login [provider]",
+          "usage": "/login [status|grok|codex]",
           "category_id": "auth",
           "category_label": "Access",
           "badges": [
-            "info"
+            "local"
           ],
-          "availability": "info",
-          "note": "Information only in this TUI build; no state change is claimed.",
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "setup",
+        "description": "Choose the LLM provider for this device and sign in if that provider uses a browser login",
+        "category": "auth",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/setup",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "oss",
+          "full"
+        ],
+        "slash": "/setup",
+        "arguments": {
+          "usage": "/setup",
+          "min_args": 0,
+          "max_args": 0,
+          "positionals": [],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "setup"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/setup",
+          "category_id": "auth",
+          "category_label": "Access",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
           "deprecated_aliases": []
         }
       },

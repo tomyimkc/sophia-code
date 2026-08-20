@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Open-edition product: no Conscience / effort / A2A / workflow / AGI-shaped surfaces.
+# Interactive tty → TUI. `-p` / `--json` / a positional goal → Python CLI.
+# Tokens stay in the official provider CLI files. canClaimAGI:false.
+_SELF="${BASH_SOURCE[0]}"
+while [[ -L "$_SELF" ]]; do
+  _DIR="$(cd -P "$(dirname "$_SELF")" && pwd)"
+  _SELF="$(readlink "$_SELF")"
+  [[ "$_SELF" = /* ]] || _SELF="$_DIR/$_SELF"
+done
+export SOPHIA_EDITION="${SOPHIA_EDITION:-oss}"
+exec "$(cd -P "$(dirname "$_SELF")" && pwd)/sophia" lite "$@"

@@ -357,6 +357,7 @@ export const PICKER_COMMAND_KINDS = {
   permissions: "permission",
   permission: "permission",
   theme: "theme",
+  login: "login",
 } as const;
 
 export type PickerCommandName = keyof typeof PICKER_COMMAND_KINDS;

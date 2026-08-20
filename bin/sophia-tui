@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_SELF="${BASH_SOURCE[0]}"
+while [[ -L "$_SELF" ]]; do
+  _DIR="$(cd -P "$(dirname "$_SELF")" && pwd)"
+  _SELF="$(readlink "$_SELF")"
+  [[ "$_SELF" = /* ]] || _SELF="$_DIR/$_SELF"
+done
+export SOPHIA_UI=tui
+exec "$(cd -P "$(dirname "$_SELF")" && pwd)/sophia" "$@"

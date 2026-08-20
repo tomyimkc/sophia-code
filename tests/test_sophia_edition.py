@@ -73,6 +73,29 @@ def test_full_only_commands_are_hidden_from_oss() -> None:
         assert command_in_edition(name, edition=EDITION_FULL) is True
 
 
+def test_oss_compound_replay_is_quiet() -> None:
+    os.environ["SOPHIA_EDITION"] = "oss"
+    try:
+        from agent.edition import is_oss_edition
+
+        assert is_oss_edition() is True
+        from agent.code_bridge import CodeBridge
+
+        rows: list[dict] = []
+        bridge = CodeBridge.__new__(CodeBridge)
+        bridge.emit = lambda payload: rows.append(payload)  # type: ignore[method-assign]
+        bridge.error = lambda *a, **k: rows.append({"error": True, "args": a, "kwargs": k})  # type: ignore[method-assign]
+        CodeBridge._handle_compound_workflow(bridge, {"action": "replay", "session": "smoke"})
+        assert rows and rows[-1].get("ok") is True
+        assert rows[-1].get("type") == "compound_workflow_status"
+        assert not any(row.get("error") for row in rows)
+        rows.clear()
+        CodeBridge._handle_compound_workflow(bridge, {"action": "run", "session": "smoke"})
+        assert any(row.get("error") for row in rows)
+    finally:
+        _clear_edition_env()
+
+
 def test_coding_cli_commands_remain_in_oss() -> None:
     for name in ("model", "permissions", "plan", "resume", "compact", "help"):
         assert command_in_edition(name, edition=EDITION_OSS) is True
