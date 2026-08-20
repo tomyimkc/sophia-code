@@ -48,6 +48,7 @@ from __future__ import annotations
 import difflib
 import hashlib
 import json
+import importlib
 import importlib.util
 import inspect
 import math
@@ -78,6 +79,14 @@ from agent.run_eta import estimate_run_duration, normalize_run_mode
 from agent.secret_patterns import redact_diagnostic
 from agent.stream_gate import StreamFloorGuard
 from agent.task_receipts import TaskKind, TaskReceiptStore, TaskState, TERMINAL_STATES
+
+
+def _optional_import(name: str):
+    """Import ``name`` or return None. Open-edition trees omit full-only modules."""
+    try:
+        return importlib.import_module(name)
+    except ImportError:
+        return None
 
 APP_NAME = "Sophia Code"
 PROTOCOL_VERSION = 2
@@ -2060,9 +2069,14 @@ def _normalize_terminal_layout(value: Any) -> str:
 
 
 def _normalize_workflow_mode(value: Any) -> str:
-    from agent.dynamic_workflow import normalize_workflow_mode
+    from agent.edition import is_oss_edition
 
-    return normalize_workflow_mode(value)
+    if is_oss_edition():
+        return "off"
+    mod = _optional_import("agent.dynamic_workflow")
+    if mod is None:
+        return "off"
+    return mod.normalize_workflow_mode(value)
 
 
 def _normalize_workflow_chart_path(value: Any) -> str:
@@ -2080,21 +2094,33 @@ def _normalize_workflow_chart_path(value: Any) -> str:
 
 
 def _normalize_workflow_max_stages(value: Any) -> int:
-    from agent.dynamic_workflow import normalize_workflow_max_stages
-
-    return normalize_workflow_max_stages(value)
+    mod = _optional_import("agent.dynamic_workflow")
+    if mod is None:
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            parsed = 6
+        return max(1, min(12, parsed))
+    return mod.normalize_workflow_max_stages(value)
 
 
 def _normalize_workflow_max_agents(value: Any) -> int:
-    from agent.dynamic_workflow import normalize_workflow_max_agents
-
-    return normalize_workflow_max_agents(value)
+    mod = _optional_import("agent.dynamic_workflow")
+    if mod is None:
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            parsed = 24
+        return max(2, min(64, parsed))
+    return mod.normalize_workflow_max_agents(value)
 
 
 def _normalize_agi_profile(value: Any) -> str:
-    from agent.agi_mode import normalize_profile
-
-    return normalize_profile(value)
+    mod = _optional_import("agent.agi_mode")
+    if mod is None:
+        text = str(value or "balanced").strip().lower()
+        return text if text in {"fast", "balanced", "deep"} else "balanced"
+    return mod.normalize_profile(value)
 
 
 def _normalize_agi_route(value: Any) -> str:
@@ -5155,6 +5181,30 @@ class CodeBridge:
                     self.emit({"type": "bye", "ts": _now_iso(), "canClaimAGI": False})
                 else:
                     self.error(f"unknown cmd {name!r}", error_type="UnknownCommand", cmd=name or None)
+            except ModuleNotFoundError as exc:
+                missing = str(getattr(exc, "name", "") or "")
+                from agent.edition import (
+                    edition_unavailable_message,
+                    is_full_only_module,
+                )
+
+                qualified = missing if missing.startswith("agent.") else f"agent.{missing}"
+                if missing and (
+                    is_full_only_module(missing) or is_full_only_module(qualified)
+                ):
+                    self.error(
+                        edition_unavailable_message(
+                            missing.rsplit(".", 1)[-1].replace("_", "-")
+                        ),
+                        error_type="OpenEdition",
+                        cmd=name or None,
+                    )
+                else:
+                    self.error(
+                        f"{type(exc).__name__}: {exc}",
+                        error_type=type(exc).__name__,
+                        cmd=name or None,
+                    )
             except Exception as exc:  # noqa: BLE001 - the app must always get JSON back
                 self.error(f"{type(exc).__name__}: {exc}", error_type=type(exc).__name__, cmd=name or None)
         finally:
