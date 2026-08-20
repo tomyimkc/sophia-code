@@ -138,8 +138,17 @@ def edition_unavailable_message(name: str) -> str:
     return EDITION_UNAVAILABLE_TEMPLATE.format(name=(name or "").strip().lstrip("/"))
 
 
+# Kernel helpers that share a full-only *prefix* but must ship in open
+# edition. ``agent.a2a`` would otherwise swallow ``agent.a2a_handoff``,
+# and Windows TUI boot crashes on ``No module named agent.a2a_handoff``.
+OSS_KERNEL_MODULE_EXCEPTIONS: frozenset[str] = frozenset({"agent.a2a_handoff"})
+OSS_KERNEL_PATH_EXCEPTIONS: frozenset[str] = frozenset({"agent/a2a_handoff.py"})
+
+
 def is_full_only_module(module: str) -> bool:
     mod = (module or "").strip()
+    if mod in OSS_KERNEL_MODULE_EXCEPTIONS:
+        return False
     for prefix in FULL_ONLY_MODULE_PREFIXES:
         if mod == prefix or mod.startswith(prefix + ".") or mod.startswith(prefix + "_"):
             return True
@@ -148,6 +157,8 @@ def is_full_only_module(module: str) -> bool:
 
 def is_full_only_path(rel: str) -> bool:
     posix = (rel or "").replace("\\", "/")
+    if posix in OSS_KERNEL_PATH_EXCEPTIONS:
+        return False
     return any(posix == prefix or posix.startswith(prefix) for prefix in FULL_ONLY_PATH_PREFIXES)
 
 

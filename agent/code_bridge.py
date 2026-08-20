@@ -2012,8 +2012,15 @@ def _normalize_team(value: Any) -> int:
 
 
 def _normalize_a2a_agents(value: Any, flag: Any = None) -> int:
-    """Return 0 (off), -1 (auto: Main decides sub count), or fixed total >=2."""
-    from agent.a2a_handoff import normalize_a2a_agent_count
+    """Return 0 (off), -1 (auto: Main decides sub count), or fixed total >=2.
+
+    Open edition still loads this on boot (settings snapshot). If the helper
+    module is absent, A2A stays off instead of crashing the TUI.
+    """
+    try:
+        from agent.a2a_handoff import normalize_a2a_agent_count
+    except ImportError:
+        return 0
 
     if value is not None and value != "":
         return normalize_a2a_agent_count(value)
