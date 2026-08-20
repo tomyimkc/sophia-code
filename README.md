@@ -8,20 +8,51 @@ A2A, workflow/flow, or AGI-shaped planner surfaces.
 
 `candidateOnly: true` · `canClaimAGI: false`
 
-## Install
+## Command-line install
 
-Linux / macOS:
+Need **Git**, **Python 3.11+**, and **Node.js 20+** on PATH. Then clone and
+install. After install, `sophia-lite` is the command.
+
+| | macOS | Linux | Windows |
+|---|---|---|---|
+| Install | `./tools/install_sophia_lite.sh` | `./tools/install_sophia_lite.sh` | `py -3 tools\install_sophia_lite.py` |
+| Run TUI | `sophia-lite` | `sophia-lite` | `sophia-lite` |
+| One-shot CLI | `sophia-lite -p "…" --mock` | same | same (`-p` is the prompt) |
+
+### macOS
 
 ```bash
+# Once, if missing:  brew install git python@3.12 node
 git clone https://github.com/tomyimkc/sophia-code.git
 cd sophia-code
-./tools/install_sophia_lite.sh   # npm ci + build, then links ~/.local/bin/sophia-lite
+./tools/install_sophia_lite.sh
 export PATH="$HOME/.local/bin:$PATH"
-sophia-lite                      # TUI
-sophia-lite -p "summarize this repo" --mock   # Python CLI (`-p` is --prompt)
+sophia-lite
+sophia-lite -p "summarize this repo" --mock
 ```
 
-Windows (cmd or PowerShell) — Python 3.11+ and Node.js 20+ on PATH:
+From the clone without putting it on PATH: `./bin/sophia-lite`
+
+### Linux
+
+```bash
+# Debian/Ubuntu example, if missing:
+#   sudo apt install -y git python3 python3-pip nodejs npm
+git clone https://github.com/tomyimkc/sophia-code.git
+cd sophia-code
+./tools/install_sophia_lite.sh
+export PATH="$HOME/.local/bin:$PATH"
+sophia-lite
+sophia-lite -p "summarize this repo" --mock
+```
+
+From the clone without putting it on PATH: `./bin/sophia-lite`
+
+### Windows
+
+cmd or PowerShell. Python 3.11+ and Node.js 20+ on PATH
+(`winget install Git.Git Python.Python.3.12 OpenJS.NodeJS.LTS`, then a **new**
+terminal).
 
 ```bat
 git clone https://github.com/tomyimkc/sophia-code.git
@@ -31,12 +62,27 @@ sophia-lite
 sophia-lite -p "summarize this repo" --mock
 ```
 
-Or from the clone without installing to PATH:
+From the clone without putting it on PATH:
 
 ```bat
-bin\sophia-lite.cmd --mock
-py -3 -m sophia.cli lite --json --readonly --no-tools --mock -p "reply with pong"
+bin\sophia-lite.cmd
+bin\sophia-lite.cmd -p "summarize this repo" --mock
 ```
+
+If `sophia-lite` is not found after install, add `%USERPROFILE%\.local\bin` to
+PATH and open a new terminal.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `sophia-lite` | Open-edition Ink TUI |
+| `sophia-lite -p "your goal"` | Python CLI (`-p` is `--prompt`) |
+| `sophia-lite --json --readonly --no-tools --mock -p "reply with pong"` | Offline CLI smoke |
+| `/login grok` (inside the TUI) | Official `grok login --oauth` browser sign-in |
+
+TUI permission is `--permission`. CLI `-p` is the prompt. Tokens stay in
+`~/.grok/auth.json`. This tree does not implement xAI OAuth.
 
 ## What you get
 
@@ -51,31 +97,6 @@ py -3 -m sophia.cli lite --json --readonly --no-tools --mock -p "reply with pong
 
 Conscience delivery gate, `/effort` / ultramode, A2A, dynamic workflows,
 GoT/Flow Studio, and the AGI-shaped planner. Those stay in the full Sophia TUI.
-
-## Grok subscription
-
-On a new device pick **Grok** at first-run (or `/setup` / `/model grok`), then
-`/login grok`. That launches the official `grok login --oauth` browser sign-in.
-Tokens stay in `~/.grok/auth.json`. This tree does not implement xAI OAuth.
-
-TUI permission is `--permission`. CLI `-p` is the prompt.
-
-## Run from the clone
-
-```bash
-cd apps/sophia-tui && npm ci && npm run build && cd ../..
-./bin/sophia-lite --mock
-./bin/sophia lite
-./bin/sophia-lite -p "summarize this repo" --mock
-```
-
-Windows:
-
-```bat
-cd apps\sophia-tui && npm ci && npm run build && cd ..\..
-bin\sophia-lite.cmd --mock
-bin\sophia.cmd lite -p "summarize this repo" --mock
-```
 
 `SOPHIA_EDITION=oss` is baked in. Do not set it to `full` in this tree; the
 full-only modules are not shipped.
