@@ -10,6 +10,8 @@ A2A, workflow/flow, or AGI-shaped planner surfaces.
 
 ## Install
 
+Linux / macOS:
+
 ```bash
 git clone https://github.com/tomyimkc/sophia-code.git
 cd sophia-code
@@ -17,6 +19,23 @@ cd sophia-code
 export PATH="$HOME/.local/bin:$PATH"
 sophia-lite                      # TUI
 sophia-lite -p "summarize this repo" --mock   # Python CLI (`-p` is --prompt)
+```
+
+Windows (cmd or PowerShell) — Python 3.11+ and Node.js 20+ on PATH:
+
+```bat
+git clone https://github.com/tomyimkc/sophia-code.git
+cd sophia-code
+py -3 tools\install_sophia_lite.py
+sophia-lite
+sophia-lite -p "summarize this repo" --mock
+```
+
+Or from the clone without installing to PATH:
+
+```bat
+bin\sophia-lite.cmd --mock
+py -3 -m sophia.cli lite --json --readonly --no-tools --mock -p "reply with pong"
 ```
 
 ## What you get
@@ -48,6 +67,14 @@ cd apps/sophia-tui && npm ci && npm run build && cd ../..
 ./bin/sophia-lite --mock
 ./bin/sophia lite
 ./bin/sophia-lite -p "summarize this repo" --mock
+```
+
+Windows:
+
+```bat
+cd apps\sophia-tui && npm ci && npm run build && cd ..\..
+bin\sophia-lite.cmd --mock
+bin\sophia.cmd lite -p "summarize this repo" --mock
 ```
 
 `SOPHIA_EDITION=oss` is baked in. Do not set it to `full` in this tree; the

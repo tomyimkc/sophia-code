@@ -248,8 +248,10 @@ def run_provider_login(
     argv = login_argv(spec, binary=binary)
     run = runner or subprocess.run
     try:
+        from sophia.portable_proc import argv_for_subprocess
+
         completed = run(
-            argv,
+            argv_for_subprocess(argv),
             capture_output=True,
             text=True,
             timeout=timeout_sec,

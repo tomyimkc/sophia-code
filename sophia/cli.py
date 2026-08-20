@@ -111,6 +111,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def lite_main(argv: list[str] | None = None) -> int:
+    """Console script ``sophia-lite`` — same as ``sophia lite``."""
+    extra = list(sys.argv[1:] if argv is None else argv)
+    return main(["lite", *extra])
+
+
 def main(argv: list[str] | None = None) -> int:
     raw_argv = list(sys.argv[1:] if argv is None else argv)
     # Sophia is primarily a terminal agent command. Keep the older training/proof
@@ -131,12 +137,16 @@ def main(argv: list[str] | None = None) -> int:
             from agent.cli import main as code_main
 
             return code_main(rest)
-        launcher = Path(__file__).resolve().parents[1] / "bin" / "sophia"
-        if launcher.is_file():
-            os.execv(str(launcher), [str(launcher), "lite", *rest])
-        from agent.cli import main as code_main
+        from sophia.tui_launch import run_tui
 
-        return code_main(rest)
+        # Windows cannot exec the POSIX bash launcher. Keep bash+stty on
+        # Unix when the file is executable; otherwise use the portable TUI
+        # spawn (also the path `bin/sophia.cmd` takes via this module).
+        if os.name != "nt":
+            launcher = Path(__file__).resolve().parents[1] / "bin" / "sophia"
+            if launcher.is_file() and os.access(launcher, os.X_OK):
+                os.execv(str(launcher), [str(launcher), "lite", *rest])
+        return run_tui(rest)
     if raw_argv and raw_argv[0] == "code":
         from agent.cli import main as code_main
 

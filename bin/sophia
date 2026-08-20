@@ -44,14 +44,4 @@ fi
 if [[ "${SOPHIA_UI}" == python ]]; then
   exec python3 -B -P -m sophia.cli "$@"
 fi
-TUI="$ROOT/apps/sophia-tui/dist/index.js"
-TUI_SRC="$ROOT/apps/sophia-tui"
-if [[ -f "$TUI_SRC/package.json" && ! -d "$TUI_SRC/node_modules/react" ]]; then
-  echo "sophia: TUI dependencies missing — run: (cd apps/sophia-tui && npm ci)" >&2
-  exit 1
-fi
-if [[ ! -f "$TUI" ]]; then
-  echo "sophia: build the TUI first: (cd apps/sophia-tui && npm ci && npm run build)" >&2
-  exit 1
-fi
-exec node "$TUI" "$@"
+exec python3 -B -P -m sophia.tui_launch "$@"

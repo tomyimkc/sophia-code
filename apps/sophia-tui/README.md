@@ -38,6 +38,7 @@ sophia-tui --mock
 sophia-tui --model zai
 sophia lite                 # open-edition TUI (also: sophia-lite)
 sophia lite -p "summarize this repo" --mock   # open-edition Python CLI
+# Windows: bin\\sophia-lite.cmd   or   py -3 -m sophia.cli lite
 ```
 
 On a new device, first-run or `/setup` picks the LLM. `/login grok` opens the
