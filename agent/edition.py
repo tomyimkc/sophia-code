@@ -52,20 +52,32 @@ FULL_ONLY_COMMANDS: frozenset[str] = frozenset(
 FULL_ONLY_MODULE_PREFIXES: tuple[str, ...] = (
     "agent.a2a",
     "agent.agi_mode",
+    "agent.agi_workflow",
     "agent.compound_workflow",
     "agent.conscience",
+    "agent.dynamic_workflow",
+    "agent.flowchart_workflow",
+    "agent.goal_harness",
     "agent.got",
     "agent.ssil",
+    "agent.swarm_router",
+    "agent.tbench",
 )
 
 #: Path prefixes (posix, relative to repo root) omitted from the public export.
 FULL_ONLY_PATH_PREFIXES: tuple[str, ...] = (
     "agent/a2a",
     "agent/agi_mode",
+    "agent/agi_workflow",
     "agent/compound_workflow",
     "agent/conscience",
+    "agent/dynamic_workflow",
+    "agent/flowchart_workflow",
+    "agent/goal_harness",
     "agent/got",
     "agent/ssil",
+    "agent/swarm_router",
+    "agent/tbench",
 )
 
 EDITION_UNAVAILABLE_TEMPLATE = (
