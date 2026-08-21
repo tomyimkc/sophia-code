@@ -29,13 +29,17 @@ def _clear_edition_env() -> None:
     os.environ.pop("SOPHIA_EDITION", None)
 
 
-def test_default_edition_is_full_in_this_repo() -> None:
+def test_default_edition_is_baked_oss_in_this_repo() -> None:
+    # This repo IS the open edition: agent/_edition_default.txt bakes "oss"
+    # (no Conscience gate by design — see README). The old assertion expected
+    # the monorepo's "full" default and broke when the slice baked its own.
     _clear_edition_env()
     importlib.reload(sys.modules["agent.edition"])
     from agent.edition import active_edition as fresh
 
     assert fresh() in {EDITION_FULL, EDITION_OSS}
-    assert edition_skips_conscience_gate() is False
+    assert fresh() == EDITION_OSS
+    assert edition_skips_conscience_gate() is True
 
 
 def test_env_selects_oss() -> None:
@@ -48,9 +52,11 @@ def test_env_selects_oss() -> None:
 
 
 def test_invalid_env_does_not_invent_an_edition() -> None:
+    # Invalid env falls back to the BAKED default ("oss" in this repo), never
+    # to an invented edition id.
     os.environ["SOPHIA_EDITION"] = "enterprise"
     try:
-        assert active_edition() == EDITION_FULL
+        assert active_edition() == EDITION_OSS
     finally:
         _clear_edition_env()
 

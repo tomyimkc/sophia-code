@@ -2074,9 +2074,25 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def _force_utf8_stdio() -> None:
+    """Windows pipes default to the ANSI codepage (cp1252), which cannot
+    encode the bilingual (EN + 中文) output this CLI emits; without this the
+    JSON/REPL modes crash with UnicodeEncodeError: 'charmap' codec. Replace
+    unencodable bytes rather than fail a delivered answer."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, OSError):
+            pass
+
+
 def main(argv: "list[str] | None" = None, *, client: Any = None,
          out: "TextIO | None" = None, inp: "TextIO | None" = None) -> int:
     args = build_parser().parse_args(argv)
+    _force_utf8_stdio()
     out = out if out is not None else sys.stdout
     inp = inp if inp is not None else sys.stdin
     _apply_config_defaults(args)

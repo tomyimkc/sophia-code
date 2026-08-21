@@ -13,6 +13,8 @@
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node scripts/run-tests.mjs",
+    "smoke:bridge": "node --import tsx scripts/smoke-bridge.mjs",
+    "build:windows-exe": "node scripts/build-windows-exe.mjs",
     "bench:anims": "node --import tsx scripts/bench-anims.mjs",
     "sync-slash": "python3 ../../tools/export_slash_catalog.py --out src/lib/slash-commands.json"
   },

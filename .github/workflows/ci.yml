@@ -33,3 +33,12 @@ jobs:
       - name: TUI tests
         working-directory: apps/sophia-tui
         run: npm ci && npm test
+      - name: TUI typecheck
+        working-directory: apps/sophia-tui
+        run: npm run typecheck
+      # Spawns the real Python kernel through the same resolver the TUI uses;
+      # windows-latest exercises the python/py -3 probe and Store-stub
+      # rejection for real.
+      - name: Real-kernel bridge smoke
+        working-directory: apps/sophia-tui
+        run: npm run smoke:bridge

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "hash": "831941e97f7d483e2600d6370ab1c06602527e3fc90a3da0596b02372412210f",
+  "hash": "993e913a87bc6117abee1290317a318e2c3d0e65685a211c38c7136e917eacac",
   "source": "sophia-code-native",
   "commands": [
     {
@@ -1469,6 +1469,82 @@
       }
     },
     {
+      "name": "conscience",
+      "description": "Choose off, advisory report, hard-floor, or strict final-answer gating",
+      "category": "settings",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [
+        "provenance"
+      ],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/conscience off|report|floor|strict|status",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/conscience",
+      "arguments": {
+        "usage": "/conscience [off|report|floor|strict|status]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "mode",
+            "value_type": "string",
+            "required": false,
+            "choices": [
+              "off",
+              "report",
+              "floor",
+              "strict",
+              "status"
+            ],
+            "rest": false
+          }
+        ],
+        "examples": [
+          "/conscience status",
+          "/conscience report",
+          "/conscience off",
+          "/conscience floor",
+          "/conscience strict"
+        ],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "conscience"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/conscience [off|report|floor|strict|status]",
+        "category_id": "settings",
+        "category_label": "Model & control",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
       "name": "mode",
       "description": "Response mode presets",
       "category": "settings",
@@ -1530,6 +1606,135 @@
       "execution_state": "implemented_local",
       "help": {
         "usage": "/mode [logical|precise|balanced|creative|divergent|all]",
+        "category_id": "settings",
+        "category_label": "Model & control",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "effort",
+      "description": "Adjust response effort (high/ultra run the creative\u2192logical deep-think debate)",
+      "category": "settings",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/effort low|medium|high|ultramode (aliases: min, med, max, ultra)",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/effort",
+      "arguments": {
+        "usage": "/effort [low|medium|high|ultramode]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "effort",
+            "value_type": "string",
+            "required": false,
+            "choices": [
+              "low",
+              "medium",
+              "high",
+              "ultramode"
+            ],
+            "rest": false
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "effort"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "implemented_local",
+          "handler": "agent.cli._repl",
+          "handler_names": [
+            "effort"
+          ],
+          "note": "Handled directly by the terminal REPL."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/effort [low|medium|high|ultramode]",
+        "category_id": "settings",
+        "category_label": "Model & control",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "ultramode",
+      "description": "Activate Sophia ultramode: explicit high-rigor deep-think effort",
+      "category": "settings",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [
+        "ultra"
+      ],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/ultramode (alias: /ultra)",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/ultramode",
+      "arguments": {
+        "usage": "/ultramode (alias: /ultra)",
+        "min_args": 0,
+        "max_args": 0,
+        "positionals": [],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "ultramode",
+            "ultra"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "implemented_local",
+          "handler": "agent.cli._repl",
+          "handler_names": [
+            "ultramode",
+            "ultra"
+          ],
+          "note": "Handled directly by the terminal REPL."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/ultramode (alias: /ultra)",
         "category_id": "settings",
         "category_label": "Model & control",
         "badges": [
@@ -3726,6 +3931,644 @@
       }
     },
     {
+      "name": "agents",
+      "description": "Legacy shortcut for a fixed A2A agent total",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/agents [n]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/agents",
+      "arguments": {
+        "usage": "/agents [count]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "count",
+            "value_type": "integer",
+            "required": false,
+            "choices": [],
+            "rest": false
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "agents"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/agents [count]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "a2a",
+      "description": "A2A harness: Main dispatches N sub-agents (auto N), then verifies+synthesizes",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/a2a on|off|status|auto|2|3|\u2026",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/a2a",
+      "arguments": {
+        "usage": "/a2a on|off|status|auto|2|3|\u2026",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "mode",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [
+          "/a2a on",
+          "/a2a auto",
+          "/a2a status",
+          "/a2a off"
+        ],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "a2a"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/a2a on|off|status|auto|2|3|\u2026",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "workflow",
+      "description": "Dynamic cloud workflow: Main chooses bounded multi-stage parallel A2A patterns",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate",
+        "cloud"
+      ],
+      "hint": "/workflow off|auto|on|status|resume <run-id>",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/workflow",
+      "arguments": {
+        "usage": "/workflow off|auto|on|status|resume <run-id>",
+        "min_args": 0,
+        "max_args": 2,
+        "positionals": [
+          {
+            "name": "mode",
+            "value_type": "string",
+            "required": false,
+            "choices": [
+              "off",
+              "auto",
+              "on",
+              "status",
+              "resume"
+            ],
+            "rest": false
+          },
+          {
+            "name": "run_id",
+            "value_type": "run_id",
+            "required": false,
+            "choices": [],
+            "rest": false
+          }
+        ],
+        "examples": [
+          "/workflow auto",
+          "/workflow on",
+          "/workflow status",
+          "/workflow off",
+          "/workflow resume <run-id>"
+        ],
+        "custom_parser": true
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "workflow"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/workflow off|auto|on|status|resume <run-id>",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local",
+          "candidate",
+          "cloud"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "agi-workflow",
+      "description": "Route each AGI controller node through solo execution or a bounded cloud workflow",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate",
+        "cloud"
+      ],
+      "hint": "/agi-workflow off|auto|on|status",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/agi-workflow",
+      "arguments": {
+        "usage": "/agi-workflow off|auto|on|status",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "mode",
+            "value_type": "string",
+            "required": false,
+            "choices": [
+              "off",
+              "auto",
+              "on",
+              "status"
+            ],
+            "rest": false
+          }
+        ],
+        "examples": [
+          "/agi-workflow auto",
+          "/agi-workflow on",
+          "/agi-workflow status",
+          "/agi-workflow off"
+        ],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "rawToken",
+          "handler_names": [
+            "agi-workflow"
+          ],
+          "note": "Handled directly by the TUI before generic slash resolution."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/agi-workflow off|auto|on|status",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local",
+          "candidate",
+          "cloud"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled directly by the TUI before generic slash resolution.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "arc",
+      "description": "Read-only ARC2/ARC3 campaign status and plan views with candidate-only and submission-gate receipts",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate",
+        "submission-gated"
+      ],
+      "hint": "/arc status|plan arc2|arc3|copy status|copy plan <contest>|close",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/arc",
+      "arguments": {
+        "usage": "/arc [status|plan arc2|arc3|copy status|copy plan <contest>|close|help]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "read_only_action",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [
+          "/arc status",
+          "/arc plan arc2",
+          "/arc plan arc3",
+          "/arc copy status"
+        ],
+        "custom_parser": true
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "arc"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/arc [status|plan arc2|arc3|copy status|copy plan <contest>|close|help]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local",
+          "candidate",
+          "submission-gated"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "terminals",
+      "description": "Choose whether A2A sub-agents run embedded or in supervised terminal PTYs",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate"
+      ],
+      "hint": "/terminals off|auto|splits|windows|headless|status",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/terminals",
+      "arguments": {
+        "usage": "/terminals off|auto|splits|windows|headless|status",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "mode",
+            "value_type": "string",
+            "required": false,
+            "choices": [
+              "off",
+              "auto",
+              "splits",
+              "windows",
+              "headless",
+              "status"
+            ],
+            "rest": false
+          }
+        ],
+        "examples": [
+          "/terminals auto",
+          "/terminals headless",
+          "/terminals off"
+        ],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "terminals"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/terminals off|auto|splits|windows|headless|status",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local",
+          "candidate"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "agi",
+      "description": "Control the adaptive, bounded, resumable AGI-shaped planner/worker/verifier loop",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate"
+      ],
+      "hint": "/agi on|off|status|profile|route|model|pause|stop|approve|resume|start",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/agi",
+      "arguments": {
+        "usage": "/agi on|off|status|profile <name>|route <auto|fast|deliberative|critical>|model <role> <model>|pause|stop|approve [action-id]|resume [run-id]|start <goal>",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "options",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [
+          "/agi on",
+          "/agi route auto",
+          "/agi route critical",
+          "/agi profile conservative",
+          "/agi model verifier openai:gpt-5",
+          "/agi pause",
+          "/agi approve",
+          "/agi resume"
+        ],
+        "custom_parser": true
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "agi"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/agi on|off|status|profile <name>|route <auto|fast|deliberative|critical>|model <role> <model>|pause|stop|approve [action-id]|resume [run-id]|start <goal>",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local",
+          "candidate"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "tasks",
+      "description": "List workflow tasks and snapshots",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/tasks [runId]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/tasks",
+      "arguments": {
+        "usage": "/tasks [runId]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "run_id",
+            "value_type": "run_id",
+            "required": false,
+            "choices": [],
+            "rest": false
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "tasks"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/tasks [runId]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "workflows",
+      "description": "List workflow trees and task snapshots",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/workflows [runId]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/workflows",
+      "arguments": {
+        "usage": "/workflows [runId]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "run_id",
+            "value_type": "run_id",
+            "required": false,
+            "choices": [],
+            "rest": false
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "workflows"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/workflows [runId]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
       "name": "queue",
       "description": "Queue a prompt to run after the active run",
       "category": "agents",
@@ -3901,6 +4744,195 @@
       "execution_state": "implemented_local",
       "help": {
         "usage": "/bench [knowledge|tool-use|trigger] [model1,model2,...]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "tbench",
+      "description": "Run terminal-bench 2.1 tasks through the agent loop (oMLX) with auto-learning",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/tbench [list|smoke|subset N|task <name>]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/tbench",
+      "arguments": {
+        "usage": "/tbench [docker] [list|smoke|subset N|task <name>] [model]",
+        "min_args": 0,
+        "max_args": null,
+        "positionals": [
+          {
+            "name": "options",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [
+          "/tbench smoke",
+          "/tbench docker task regex-log"
+        ],
+        "custom_parser": true
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "tbench"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/tbench [docker] [list|smoke|subset N|task <name>] [model]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "gaia",
+      "description": "GAIA benchmark \u2014 per-level harness diagnostic (single-step \u2192 long-horizon)",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/gaia [level 1|2|3] [n PER_LEVEL]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/gaia",
+      "arguments": {
+        "usage": "/gaia [level 1|2|3] [n N] [model]",
+        "min_args": 0,
+        "max_args": null,
+        "positionals": [
+          {
+            "name": "options",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [],
+        "custom_parser": true
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "gaia"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/gaia [level 1|2|3] [n N] [model]",
+        "category_id": "agents",
+        "category_label": "Agents & eval",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "taubench",
+      "description": "\u03c4-bench reliability (pass^k) \u2014 measures harness flakiness, not peak score",
+      "category": "agents",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/taubench [retail|airline] [k TRIALS] [n TASKS]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/taubench",
+      "arguments": {
+        "usage": "/taubench [retail|airline] [k TRIALS] [n TASKS] [model]",
+        "min_args": 0,
+        "max_args": null,
+        "positionals": [
+          {
+            "name": "options",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [],
+        "custom_parser": true
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "taubench"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/taubench [retail|airline] [k TRIALS] [n TASKS] [model]",
         "category_id": "agents",
         "category_label": "Agents & eval",
         "badges": [
@@ -6537,6 +7569,333 @@
       }
     },
     {
+      "name": "graph",
+      "description": "Open the read-only OKF provenance-graph audit panel (candidateOnly)",
+      "category": "sophia",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate"
+      ],
+      "hint": "/graph [entity]",
+      "collapse_chat": true,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/graph",
+      "arguments": {
+        "usage": "/graph [entity]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "entity",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "rawToken",
+          "handler_names": [
+            "graph"
+          ],
+          "note": "Handled directly by the TUI before generic slash resolution."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/graph [entity]",
+        "category_id": "sophia",
+        "category_label": "Sophia",
+        "badges": [
+          "local",
+          "candidate"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled directly by the TUI before generic slash resolution.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "goal",
+      "description": "Autonomous mode: keep working until the goal is achieved or confidently unachievable (bounded; candidateOnly)",
+      "category": "sophia",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "candidate"
+      ],
+      "hint": "/goal <what you want achieved>",
+      "collapse_chat": true,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/goal",
+      "arguments": {
+        "usage": "/goal <goal>",
+        "min_args": 1,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "goal",
+            "value_type": "string",
+            "required": true,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [
+          "/goal make the failing tests pass"
+        ],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "rawToken",
+          "handler_names": [
+            "goal"
+          ],
+          "note": "Handled directly by the TUI before generic slash resolution."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/goal <goal>",
+        "category_id": "sophia",
+        "category_label": "Sophia",
+        "badges": [
+          "local",
+          "candidate"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled directly by the TUI before generic slash resolution.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "panel",
+      "description": "Show, hide, or expand Goal, Workflow, Agents, To-do, AGI, and live Flow views",
+      "category": "sophia",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/panel [show|hide|goal|workflow|agents|todo|agi|flow|details|compact|status]",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/panel",
+      "arguments": {
+        "usage": "/panel [show|hide|goal|workflow|agents|todo|agi|flow|details|compact|status]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "view",
+            "value_type": "string",
+            "required": false,
+            "choices": [
+              "show",
+              "hide",
+              "goal",
+              "workflow",
+              "agents",
+              "todo",
+              "agi",
+              "flow",
+              "details",
+              "compact",
+              "status"
+            ],
+            "rest": false
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "rawToken",
+          "handler_names": [
+            "panel"
+          ],
+          "note": "Handled directly by the TUI before generic slash resolution."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/panel [show|hide|goal|workflow|agents|todo|agi|flow|details|compact|status]",
+        "category_id": "sophia",
+        "category_label": "Sophia",
+        "badges": [
+          "local"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled directly by the TUI before generic slash resolution.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "contract",
+      "description": "Show the compact Sophia runtime policy and ultramode boundary",
+      "category": "sophia",
+      "kind": "local",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [
+        "sophia-native"
+      ],
+      "hint": "",
+      "collapse_chat": false,
+      "prompt_template": "",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/contract",
+      "arguments": {
+        "usage": "/contract",
+        "min_args": 0,
+        "max_args": 0,
+        "positionals": [],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "implemented_local",
+          "handler": "runLocalSlash",
+          "handler_names": [
+            "contract"
+          ],
+          "note": "Handled locally by the TUI; it does not invent an agent goal."
+        },
+        "terminal": {
+          "execution_state": "info",
+          "handler": "",
+          "handler_names": [],
+          "note": "Information only in the terminal REPL; no state change is claimed."
+        }
+      },
+      "execution_state": "implemented_local",
+      "help": {
+        "usage": "/contract",
+        "category_id": "sophia",
+        "category_label": "Sophia",
+        "badges": [
+          "local",
+          "sophia-native"
+        ],
+        "availability": "implemented_local",
+        "note": "Handled locally by the TUI; it does not invent an agent goal.",
+        "deprecated_aliases": []
+      }
+    },
+    {
+      "name": "thesis",
+      "description": "Thesis discussion prompt",
+      "category": "sophia",
+      "kind": "prompt",
+      "support_state": "supported",
+      "aliases": [],
+      "deprecated_aliases": [],
+      "badges": [],
+      "hint": "/thesis <question>",
+      "collapse_chat": true,
+      "prompt_template": "Discuss the repository thesis as a hypothesis, with evidence and open gaps. {args}",
+      "target": "",
+      "editions": [
+        "full"
+      ],
+      "slash": "/thesis",
+      "arguments": {
+        "usage": "/thesis [question]",
+        "min_args": 0,
+        "max_args": 1,
+        "positionals": [
+          {
+            "name": "question",
+            "value_type": "string",
+            "required": false,
+            "choices": [],
+            "rest": true
+          }
+        ],
+        "examples": [],
+        "custom_parser": false
+      },
+      "client_execution": {
+        "tui": {
+          "execution_state": "prompt",
+          "handler": "expandPromptCommand",
+          "handler_names": [
+            "thesis"
+          ],
+          "note": "Expands to an agent goal and runs under the active tool-permission policy."
+        },
+        "terminal": {
+          "execution_state": "prompt",
+          "handler": "agent.cli.prompt_template",
+          "handler_names": [
+            "thesis"
+          ],
+          "note": "Expands to an agent goal and runs under the active tool-permission policy."
+        }
+      },
+      "execution_state": "prompt",
+      "help": {
+        "usage": "/thesis [question]",
+        "category_id": "sophia",
+        "category_label": "Sophia",
+        "badges": [
+          "agent"
+        ],
+        "availability": "prompt",
+        "note": "Expands to an agent goal and runs under the active tool-permission policy.",
+        "deprecated_aliases": []
+      }
+    },
+    {
       "name": "brainstorm",
       "description": "Brainstorm prompt using creative mode",
       "category": "sophia",
@@ -8072,6 +9431,82 @@
         }
       },
       {
+        "name": "conscience",
+        "description": "Choose off, advisory report, hard-floor, or strict final-answer gating",
+        "category": "settings",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [
+          "provenance"
+        ],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/conscience off|report|floor|strict|status",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/conscience",
+        "arguments": {
+          "usage": "/conscience [off|report|floor|strict|status]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "mode",
+              "value_type": "string",
+              "required": false,
+              "choices": [
+                "off",
+                "report",
+                "floor",
+                "strict",
+                "status"
+              ],
+              "rest": false
+            }
+          ],
+          "examples": [
+            "/conscience status",
+            "/conscience report",
+            "/conscience off",
+            "/conscience floor",
+            "/conscience strict"
+          ],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "conscience"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/conscience [off|report|floor|strict|status]",
+          "category_id": "settings",
+          "category_label": "Model & control",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
         "name": "mode",
         "description": "Response mode presets",
         "category": "settings",
@@ -8133,6 +9568,135 @@
         "execution_state": "implemented_local",
         "help": {
           "usage": "/mode [logical|precise|balanced|creative|divergent|all]",
+          "category_id": "settings",
+          "category_label": "Model & control",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "effort",
+        "description": "Adjust response effort (high/ultra run the creative\u2192logical deep-think debate)",
+        "category": "settings",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/effort low|medium|high|ultramode (aliases: min, med, max, ultra)",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/effort",
+        "arguments": {
+          "usage": "/effort [low|medium|high|ultramode]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "effort",
+              "value_type": "string",
+              "required": false,
+              "choices": [
+                "low",
+                "medium",
+                "high",
+                "ultramode"
+              ],
+              "rest": false
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "effort"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "implemented_local",
+            "handler": "agent.cli._repl",
+            "handler_names": [
+              "effort"
+            ],
+            "note": "Handled directly by the terminal REPL."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/effort [low|medium|high|ultramode]",
+          "category_id": "settings",
+          "category_label": "Model & control",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "ultramode",
+        "description": "Activate Sophia ultramode: explicit high-rigor deep-think effort",
+        "category": "settings",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [
+          "ultra"
+        ],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/ultramode (alias: /ultra)",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/ultramode",
+        "arguments": {
+          "usage": "/ultramode (alias: /ultra)",
+          "min_args": 0,
+          "max_args": 0,
+          "positionals": [],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "ultramode",
+              "ultra"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "implemented_local",
+            "handler": "agent.cli._repl",
+            "handler_names": [
+              "ultramode",
+              "ultra"
+            ],
+            "note": "Handled directly by the terminal REPL."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/ultramode (alias: /ultra)",
           "category_id": "settings",
           "category_label": "Model & control",
           "badges": [
@@ -10335,6 +11899,644 @@
         }
       },
       {
+        "name": "agents",
+        "description": "Legacy shortcut for a fixed A2A agent total",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/agents [n]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/agents",
+        "arguments": {
+          "usage": "/agents [count]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "count",
+              "value_type": "integer",
+              "required": false,
+              "choices": [],
+              "rest": false
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "agents"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/agents [count]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "a2a",
+        "description": "A2A harness: Main dispatches N sub-agents (auto N), then verifies+synthesizes",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/a2a on|off|status|auto|2|3|\u2026",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/a2a",
+        "arguments": {
+          "usage": "/a2a on|off|status|auto|2|3|\u2026",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "mode",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [
+            "/a2a on",
+            "/a2a auto",
+            "/a2a status",
+            "/a2a off"
+          ],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "a2a"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/a2a on|off|status|auto|2|3|\u2026",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "workflow",
+        "description": "Dynamic cloud workflow: Main chooses bounded multi-stage parallel A2A patterns",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate",
+          "cloud"
+        ],
+        "hint": "/workflow off|auto|on|status|resume <run-id>",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/workflow",
+        "arguments": {
+          "usage": "/workflow off|auto|on|status|resume <run-id>",
+          "min_args": 0,
+          "max_args": 2,
+          "positionals": [
+            {
+              "name": "mode",
+              "value_type": "string",
+              "required": false,
+              "choices": [
+                "off",
+                "auto",
+                "on",
+                "status",
+                "resume"
+              ],
+              "rest": false
+            },
+            {
+              "name": "run_id",
+              "value_type": "run_id",
+              "required": false,
+              "choices": [],
+              "rest": false
+            }
+          ],
+          "examples": [
+            "/workflow auto",
+            "/workflow on",
+            "/workflow status",
+            "/workflow off",
+            "/workflow resume <run-id>"
+          ],
+          "custom_parser": true
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "workflow"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/workflow off|auto|on|status|resume <run-id>",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local",
+            "candidate",
+            "cloud"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "agi-workflow",
+        "description": "Route each AGI controller node through solo execution or a bounded cloud workflow",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate",
+          "cloud"
+        ],
+        "hint": "/agi-workflow off|auto|on|status",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/agi-workflow",
+        "arguments": {
+          "usage": "/agi-workflow off|auto|on|status",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "mode",
+              "value_type": "string",
+              "required": false,
+              "choices": [
+                "off",
+                "auto",
+                "on",
+                "status"
+              ],
+              "rest": false
+            }
+          ],
+          "examples": [
+            "/agi-workflow auto",
+            "/agi-workflow on",
+            "/agi-workflow status",
+            "/agi-workflow off"
+          ],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "rawToken",
+            "handler_names": [
+              "agi-workflow"
+            ],
+            "note": "Handled directly by the TUI before generic slash resolution."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/agi-workflow off|auto|on|status",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local",
+            "candidate",
+            "cloud"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled directly by the TUI before generic slash resolution.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "arc",
+        "description": "Read-only ARC2/ARC3 campaign status and plan views with candidate-only and submission-gate receipts",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate",
+          "submission-gated"
+        ],
+        "hint": "/arc status|plan arc2|arc3|copy status|copy plan <contest>|close",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/arc",
+        "arguments": {
+          "usage": "/arc [status|plan arc2|arc3|copy status|copy plan <contest>|close|help]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "read_only_action",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [
+            "/arc status",
+            "/arc plan arc2",
+            "/arc plan arc3",
+            "/arc copy status"
+          ],
+          "custom_parser": true
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "arc"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/arc [status|plan arc2|arc3|copy status|copy plan <contest>|close|help]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local",
+            "candidate",
+            "submission-gated"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "terminals",
+        "description": "Choose whether A2A sub-agents run embedded or in supervised terminal PTYs",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate"
+        ],
+        "hint": "/terminals off|auto|splits|windows|headless|status",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/terminals",
+        "arguments": {
+          "usage": "/terminals off|auto|splits|windows|headless|status",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "mode",
+              "value_type": "string",
+              "required": false,
+              "choices": [
+                "off",
+                "auto",
+                "splits",
+                "windows",
+                "headless",
+                "status"
+              ],
+              "rest": false
+            }
+          ],
+          "examples": [
+            "/terminals auto",
+            "/terminals headless",
+            "/terminals off"
+          ],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "terminals"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/terminals off|auto|splits|windows|headless|status",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local",
+            "candidate"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "agi",
+        "description": "Control the adaptive, bounded, resumable AGI-shaped planner/worker/verifier loop",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate"
+        ],
+        "hint": "/agi on|off|status|profile|route|model|pause|stop|approve|resume|start",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/agi",
+        "arguments": {
+          "usage": "/agi on|off|status|profile <name>|route <auto|fast|deliberative|critical>|model <role> <model>|pause|stop|approve [action-id]|resume [run-id]|start <goal>",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "options",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [
+            "/agi on",
+            "/agi route auto",
+            "/agi route critical",
+            "/agi profile conservative",
+            "/agi model verifier openai:gpt-5",
+            "/agi pause",
+            "/agi approve",
+            "/agi resume"
+          ],
+          "custom_parser": true
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "agi"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/agi on|off|status|profile <name>|route <auto|fast|deliberative|critical>|model <role> <model>|pause|stop|approve [action-id]|resume [run-id]|start <goal>",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local",
+            "candidate"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "tasks",
+        "description": "List workflow tasks and snapshots",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/tasks [runId]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/tasks",
+        "arguments": {
+          "usage": "/tasks [runId]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "run_id",
+              "value_type": "run_id",
+              "required": false,
+              "choices": [],
+              "rest": false
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "tasks"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/tasks [runId]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "workflows",
+        "description": "List workflow trees and task snapshots",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/workflows [runId]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/workflows",
+        "arguments": {
+          "usage": "/workflows [runId]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "run_id",
+              "value_type": "run_id",
+              "required": false,
+              "choices": [],
+              "rest": false
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "workflows"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/workflows [runId]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
         "name": "queue",
         "description": "Queue a prompt to run after the active run",
         "category": "agents",
@@ -10510,6 +12712,195 @@
         "execution_state": "implemented_local",
         "help": {
           "usage": "/bench [knowledge|tool-use|trigger] [model1,model2,...]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "tbench",
+        "description": "Run terminal-bench 2.1 tasks through the agent loop (oMLX) with auto-learning",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/tbench [list|smoke|subset N|task <name>]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/tbench",
+        "arguments": {
+          "usage": "/tbench [docker] [list|smoke|subset N|task <name>] [model]",
+          "min_args": 0,
+          "max_args": null,
+          "positionals": [
+            {
+              "name": "options",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [
+            "/tbench smoke",
+            "/tbench docker task regex-log"
+          ],
+          "custom_parser": true
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "tbench"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/tbench [docker] [list|smoke|subset N|task <name>] [model]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "gaia",
+        "description": "GAIA benchmark \u2014 per-level harness diagnostic (single-step \u2192 long-horizon)",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/gaia [level 1|2|3] [n PER_LEVEL]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/gaia",
+        "arguments": {
+          "usage": "/gaia [level 1|2|3] [n N] [model]",
+          "min_args": 0,
+          "max_args": null,
+          "positionals": [
+            {
+              "name": "options",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [],
+          "custom_parser": true
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "gaia"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/gaia [level 1|2|3] [n N] [model]",
+          "category_id": "agents",
+          "category_label": "Agents & eval",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "taubench",
+        "description": "\u03c4-bench reliability (pass^k) \u2014 measures harness flakiness, not peak score",
+        "category": "agents",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/taubench [retail|airline] [k TRIALS] [n TASKS]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/taubench",
+        "arguments": {
+          "usage": "/taubench [retail|airline] [k TRIALS] [n TASKS] [model]",
+          "min_args": 0,
+          "max_args": null,
+          "positionals": [
+            {
+              "name": "options",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [],
+          "custom_parser": true
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "taubench"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/taubench [retail|airline] [k TRIALS] [n TASKS] [model]",
           "category_id": "agents",
           "category_label": "Agents & eval",
           "badges": [
@@ -13162,6 +15553,333 @@
         }
       },
       {
+        "name": "graph",
+        "description": "Open the read-only OKF provenance-graph audit panel (candidateOnly)",
+        "category": "sophia",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate"
+        ],
+        "hint": "/graph [entity]",
+        "collapse_chat": true,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/graph",
+        "arguments": {
+          "usage": "/graph [entity]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "entity",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "rawToken",
+            "handler_names": [
+              "graph"
+            ],
+            "note": "Handled directly by the TUI before generic slash resolution."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/graph [entity]",
+          "category_id": "sophia",
+          "category_label": "Sophia",
+          "badges": [
+            "local",
+            "candidate"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled directly by the TUI before generic slash resolution.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "goal",
+        "description": "Autonomous mode: keep working until the goal is achieved or confidently unachievable (bounded; candidateOnly)",
+        "category": "sophia",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "candidate"
+        ],
+        "hint": "/goal <what you want achieved>",
+        "collapse_chat": true,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/goal",
+        "arguments": {
+          "usage": "/goal <goal>",
+          "min_args": 1,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "goal",
+              "value_type": "string",
+              "required": true,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [
+            "/goal make the failing tests pass"
+          ],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "rawToken",
+            "handler_names": [
+              "goal"
+            ],
+            "note": "Handled directly by the TUI before generic slash resolution."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/goal <goal>",
+          "category_id": "sophia",
+          "category_label": "Sophia",
+          "badges": [
+            "local",
+            "candidate"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled directly by the TUI before generic slash resolution.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "panel",
+        "description": "Show, hide, or expand Goal, Workflow, Agents, To-do, AGI, and live Flow views",
+        "category": "sophia",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/panel [show|hide|goal|workflow|agents|todo|agi|flow|details|compact|status]",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/panel",
+        "arguments": {
+          "usage": "/panel [show|hide|goal|workflow|agents|todo|agi|flow|details|compact|status]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "view",
+              "value_type": "string",
+              "required": false,
+              "choices": [
+                "show",
+                "hide",
+                "goal",
+                "workflow",
+                "agents",
+                "todo",
+                "agi",
+                "flow",
+                "details",
+                "compact",
+                "status"
+              ],
+              "rest": false
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "rawToken",
+            "handler_names": [
+              "panel"
+            ],
+            "note": "Handled directly by the TUI before generic slash resolution."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/panel [show|hide|goal|workflow|agents|todo|agi|flow|details|compact|status]",
+          "category_id": "sophia",
+          "category_label": "Sophia",
+          "badges": [
+            "local"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled directly by the TUI before generic slash resolution.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "contract",
+        "description": "Show the compact Sophia runtime policy and ultramode boundary",
+        "category": "sophia",
+        "kind": "local",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [
+          "sophia-native"
+        ],
+        "hint": "",
+        "collapse_chat": false,
+        "prompt_template": "",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/contract",
+        "arguments": {
+          "usage": "/contract",
+          "min_args": 0,
+          "max_args": 0,
+          "positionals": [],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "implemented_local",
+            "handler": "runLocalSlash",
+            "handler_names": [
+              "contract"
+            ],
+            "note": "Handled locally by the TUI; it does not invent an agent goal."
+          },
+          "terminal": {
+            "execution_state": "info",
+            "handler": "",
+            "handler_names": [],
+            "note": "Information only in the terminal REPL; no state change is claimed."
+          }
+        },
+        "execution_state": "implemented_local",
+        "help": {
+          "usage": "/contract",
+          "category_id": "sophia",
+          "category_label": "Sophia",
+          "badges": [
+            "local",
+            "sophia-native"
+          ],
+          "availability": "implemented_local",
+          "note": "Handled locally by the TUI; it does not invent an agent goal.",
+          "deprecated_aliases": []
+        }
+      },
+      {
+        "name": "thesis",
+        "description": "Thesis discussion prompt",
+        "category": "sophia",
+        "kind": "prompt",
+        "support_state": "supported",
+        "aliases": [],
+        "deprecated_aliases": [],
+        "badges": [],
+        "hint": "/thesis <question>",
+        "collapse_chat": true,
+        "prompt_template": "Discuss the repository thesis as a hypothesis, with evidence and open gaps. {args}",
+        "target": "",
+        "editions": [
+          "full"
+        ],
+        "slash": "/thesis",
+        "arguments": {
+          "usage": "/thesis [question]",
+          "min_args": 0,
+          "max_args": 1,
+          "positionals": [
+            {
+              "name": "question",
+              "value_type": "string",
+              "required": false,
+              "choices": [],
+              "rest": true
+            }
+          ],
+          "examples": [],
+          "custom_parser": false
+        },
+        "client_execution": {
+          "tui": {
+            "execution_state": "prompt",
+            "handler": "expandPromptCommand",
+            "handler_names": [
+              "thesis"
+            ],
+            "note": "Expands to an agent goal and runs under the active tool-permission policy."
+          },
+          "terminal": {
+            "execution_state": "prompt",
+            "handler": "agent.cli.prompt_template",
+            "handler_names": [
+              "thesis"
+            ],
+            "note": "Expands to an agent goal and runs under the active tool-permission policy."
+          }
+        },
+        "execution_state": "prompt",
+        "help": {
+          "usage": "/thesis [question]",
+          "category_id": "sophia",
+          "category_label": "Sophia",
+          "badges": [
+            "agent"
+          ],
+          "availability": "prompt",
+          "note": "Expands to an agent goal and runs under the active tool-permission policy.",
+          "deprecated_aliases": []
+        }
+      },
+      {
         "name": "brainstorm",
         "description": "Brainstorm prompt using creative mode",
         "category": "sophia",
@@ -13363,7 +16081,7 @@
       "oss",
       "full"
     ],
-    "defaultEdition": "oss",
+    "defaultEdition": "full",
     "editionUnavailableTemplate": "/{name} is not part of Sophia Code (open edition). It remains in the full Sophia TUI. No action was taken."
   },
   "canClaimAGI": false

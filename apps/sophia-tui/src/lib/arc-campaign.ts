@@ -8,6 +8,11 @@
  * diagnostic containing credentials) is not copied into the transcript.
  */
 import { execFile } from "node:child_process";
+import {
+  pythonCommandLine,
+  resolvePythonLaunch,
+  type PythonLaunch,
+} from "./pythonResolver.js";
 
 export type ArcContest = "arc-agi-2" | "arc-agi-3";
 export type ArcViewKind = "status" | "plan";
@@ -96,7 +101,24 @@ export type ArcCommandExecutor = (
 
 const MAX_JSON_BYTES = 1_000_000;
 const COMMAND_TIMEOUT_MS = 12_000;
-const STATUS_COMMAND = "python3 -m agent.arc_campaign status --json";
+
+/**
+ * The displayed/executed ARC campaign prefix follows the shared Python
+ * resolver: `python3` on POSIX, the probed `python`/`py -3` on win32, and an
+ * explicit `SOPHIA_PYTHON`/`PYTHON` override everywhere.
+ */
+function arcPythonLaunch(): PythonLaunch {
+  return resolvePythonLaunch(process.env);
+}
+
+function arcCommandForQuery(query: ArcCampaignQuery): string {
+  const launch = arcPythonLaunch();
+  return pythonCommandLine(launch, arcCommandArgs(query));
+}
+
+function statusCommand(): string {
+  return arcCommandForQuery({ kind: "status" });
+}
 
 const CONTEST_ALIASES: Record<ArcContest, string[]> = {
   "arc-agi-2": ["arc-agi-2", "arc_agi_2", "arc2", "arc-2", "2"],
@@ -189,9 +211,9 @@ export function arcContestLabel(contest: ArcContest): "ARC2" | "ARC3" {
 }
 
 export function arcCommandFor(query: ArcCampaignQuery): string {
-  if (query.kind === "status") return STATUS_COMMAND;
+  if (query.kind === "status") return statusCommand();
   if (!query.contest) throw new Error("ARC plan command requires a contest");
-  return `python3 -m agent.arc_campaign plan --contest ${query.contest} --json`;
+  return arcCommandForQuery({ kind: "plan", contest: query.contest });
 }
 
 export function arcCommandArgs(query: ArcCampaignQuery): string[] {
@@ -209,7 +231,7 @@ export function arcCommandArgs(query: ArcCampaignQuery): string[] {
 
 export function arcOperatorCommands(): string[] {
   return [
-    STATUS_COMMAND,
+    statusCommand(),
     arcCommandFor({ kind: "plan", contest: "arc-agi-2" }),
     arcCommandFor({ kind: "plan", contest: "arc-agi-3" }),
   ];
@@ -234,7 +256,7 @@ export function parseArcSlashArgs(args: string): ArcSlashIntent {
   if (action === "copy") {
     const target = (parts.shift() || "status").toLowerCase();
     if (target === "status" && !parts.length) {
-      return { action: "copy", command: STATUS_COMMAND };
+      return { action: "copy", command: statusCommand() };
     }
     if (target === "plan") {
       const contest = normalizeArcContest(parts.shift() || "");
@@ -677,8 +699,9 @@ export async function loadArcCampaignPanel(
   executor: ArcCommandExecutor = defaultExecutor,
 ): Promise<ArcCampaignPanelState> {
   const command = arcCommandFor(query);
+  const launch = arcPythonLaunch();
   try {
-    const result = await executor("python3", arcCommandArgs(query), {
+    const result = await executor(launch.command, [...launch.preArgs, ...arcCommandArgs(query)], {
       cwd,
       timeoutMs: COMMAND_TIMEOUT_MS,
       maxBuffer: MAX_JSON_BYTES,

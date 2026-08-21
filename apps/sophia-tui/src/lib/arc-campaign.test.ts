@@ -14,12 +14,19 @@ import {
   projectArcCampaignJson,
   sanitizeArcText,
 } from "./arc-campaign.js";
+import { pythonCommandLine, resolvePythonLaunch } from "./pythonResolver.js";
+
+// Expected command text is built from the same resolver the implementation
+// uses, so the assertions hold on POSIX (python3) and on Windows (probed
+// python / py -3) alike.
+const expectedArcCommand = (args: string[]) =>
+  pythonCommandLine(resolvePythonLaunch(process.env), args);
 
 test("operator commands target only bounded status and plan JSON entry points", () => {
   assert.deepEqual(arcOperatorCommands(), [
-    "python3 -m agent.arc_campaign status --json",
-    "python3 -m agent.arc_campaign plan --contest arc-agi-2 --json",
-    "python3 -m agent.arc_campaign plan --contest arc-agi-3 --json",
+    expectedArcCommand(["-m", "agent.arc_campaign", "status", "--json"]),
+    expectedArcCommand(["-m", "agent.arc_campaign", "plan", "--contest", "arc-agi-2", "--json"]),
+    expectedArcCommand(["-m", "agent.arc_campaign", "plan", "--contest", "arc-agi-3", "--json"]),
   ]);
   assert.deepEqual(arcCommandArgs({ kind: "status" }), [
     "-m",
@@ -29,7 +36,7 @@ test("operator commands target only bounded status and plan JSON entry points", 
   ]);
   assert.equal(
     arcCommandFor({ kind: "plan", contest: "arc-agi-3" }),
-    "python3 -m agent.arc_campaign plan --contest arc-agi-3 --json",
+    expectedArcCommand(["-m", "agent.arc_campaign", "plan", "--contest", "arc-agi-3", "--json"]),
   );
 });
 
@@ -44,7 +51,7 @@ test("slash parser defaults to status, accepts ARC aliases, and refuses operatio
   });
   assert.deepEqual(parseArcSlashArgs("copy plan arc2"), {
     action: "copy",
-    command: "python3 -m agent.arc_campaign plan --contest arc-agi-2 --json",
+    command: expectedArcCommand(["-m", "agent.arc_campaign", "plan", "--contest", "arc-agi-2", "--json"]),
   });
   for (const unsafe of ["submit", "run", "eval", "public-eval", "stop", "cancel", "kill"]) {
     const intent = parseArcSlashArgs(unsafe);

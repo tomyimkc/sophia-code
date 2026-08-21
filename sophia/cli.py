@@ -15,6 +15,21 @@ from sophia import __version__
 PACKAGE_COMMANDS = {"experiment", "train", "eval", "promote", "app-bridge"}
 
 
+def _force_utf8_stdio() -> None:
+    """Windows pipes default to the ANSI codepage (cp1252), which cannot
+    encode the bilingual (EN + 中文) output this CLI emits; without this the
+    JSON/REPL modes crash with UnicodeEncodeError: 'charmap' codec. Replace
+    unencodable bytes rather than fail a delivered answer."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, OSError):
+            pass
+
+
 def _add_config_args(parser: argparse.ArgumentParser, *, allow_execute: bool) -> None:
     parser.add_argument("--config", required=True, help="experiment config JSON/TOML")
     parser.add_argument("--repo-root", default=".", help="repository root for script execution")
@@ -118,6 +133,7 @@ def lite_main(argv: list[str] | None = None) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _force_utf8_stdio()
     raw_argv = list(sys.argv[1:] if argv is None else argv)
     # Sophia is primarily a terminal agent command. Keep the older training/proof
     # subcommands intact, but make ``sophia`` / ``sophia -p ...`` / ``sophia
