@@ -72,6 +72,27 @@ bin\sophia-lite.cmd -p "summarize this repo" --mock
 If `sophia-lite` is not found after install, add `%USERPROFILE%\.local\bin` to
 PATH and open a new terminal.
 
+### Windows — portable exe package (no install)
+
+Build a self-contained folder (compiled `sophia-tui.exe` + Python kernel +
+optional embedded CPython) from any macOS/Linux/Windows clone:
+
+```bash
+cd apps/sophia-tui
+npm ci
+npm run build:windows-exe -- --fetch-python --zip
+```
+
+Copy the produced `dist/sophia-windows/` folder (or zip) to the Windows
+device and run `sophia.cmd` from Windows Terminal. First smoke:
+`sophia.cmd --version`, then a `--mock` session. The exe is unsigned, so
+SmartScreen may warn ("More info → Run anyway").
+
+Every TUI subprocess resolves Python through one shared lookup
+(`apps/sophia-tui/src/lib/pythonResolver.ts`): `SOPHIA_PYTHON` → `PYTHON` →
+platform default (`python3` on POSIX; on Windows a one-time probe of
+`python` then `py -3` that rejects the Microsoft Store stub). `canClaimAGI: false`.
+
 ## Commands
 
 | Command | What it does |

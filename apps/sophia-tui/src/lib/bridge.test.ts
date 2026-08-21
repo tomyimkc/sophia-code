@@ -15,6 +15,8 @@ import {
   sanitizeBridgeStderr,
   isTerminalBridgeEvent,
   kernelApprovalId,
+  runtimeRootCandidates,
+  sophiaKernelCandidates,
   type BridgeOptions,
   type BridgeEvent,
 } from "./bridge.js";
@@ -1460,4 +1462,40 @@ test("new one-shot kernel-capability replies are QoS-critical, like their diagno
   ]) {
     assert.equal(bridgeEventQoS({ type }).class, "critical", `${type} must not be droppable/coalescable`);
   }
+});
+
+
+test("win32 kernel candidates probe the .exe suffix for libexec and SOPHIA_KERNEL", () => {
+  const posix = sophiaKernelCandidates("/opt/sophia", undefined, "linux");
+  assert.deepEqual(posix, ["/opt/sophia/libexec/sophia-kernel"]);
+  const win32Libexec = sophiaKernelCandidates("C:\\sophia", undefined, "win32");
+  assert.deepEqual(win32Libexec, [
+    "C:\\sophia\\libexec\\sophia-kernel.exe",
+    "C:\\sophia\\libexec\\sophia-kernel",
+  ]);
+  const win32Explicit = sophiaKernelCandidates(
+    "C:\\sophia",
+    { SOPHIA_KERNEL: "C:\\tools\\sophia-kernel" },
+    "win32",
+  );
+  assert.deepEqual(win32Explicit, [
+    "C:\\tools\\sophia-kernel",
+    "C:\\tools\\sophia-kernel.exe",
+  ]);
+});
+
+test("runtime root candidates cover compiled-exe, release-bin, and source layouts", () => {
+  const exe = runtimeRootCandidates(
+    "C:\\Apps\\sophia-code-windows\\sophia-tui.exe",
+    "/repo/apps/sophia-tui/src/lib",
+    "win32",
+  );
+  assert.deepEqual(exe.slice(0, 2), [
+    "C:\\Apps\\sophia-code-windows",
+    "C:\\Apps",
+  ]);
+  const launcher = runtimeRootCandidates("/opt/sophia/bin/sophia", "unused", "linux");
+  assert.equal(launcher[1], "/opt/sophia");
+  const source = runtimeRootCandidates("/usr/local/bin/node", "/repo/apps/sophia-tui/src/lib", "darwin");
+  assert.equal(source[2], "/repo");
 });

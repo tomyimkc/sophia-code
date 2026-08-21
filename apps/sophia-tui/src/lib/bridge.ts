@@ -20,6 +20,7 @@ import {
   shouldTimeoutRun,
 } from "./liveness.js";
 import { activeEdition } from "./slash.js";
+import { resolvePythonLaunch } from "./pythonResolver.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,17 +29,39 @@ function pythonRoot(repoRoot: string): string {
   return existsSync(path.join(bundled, "agent", "code_bridge.py")) ? bundled : repoRoot;
 }
 
-function bundledKernel(repoRoot: string): string | null {
-  const explicit = process.env.SOPHIA_KERNEL?.trim();
+/**
+ * Executable paths to try for a kernel binary. win32 builds conventionally
+ * carry a `.exe` suffix, so an extensionless reference also probes `…exe`
+ * (and the libexec default prefers the suffixed file when both exist).
+ */
+export function sophiaKernelCandidates(
+  repoRoot: string,
+  env: { SOPHIA_KERNEL?: string | undefined } = process.env,
+  platform: NodeJS.Platform = process.platform,
+): string[] {
+  // Build paths with the TARGET platform's semantics so a POSIX build host
+  // can plan (and test) a win32 runtime layout correctly.
+  const targetPath = platform === "win32" ? path.win32 : path.posix;
+  const explicit = env.SOPHIA_KERNEL?.trim();
   if (explicit) {
-    const resolved = path.resolve(explicit);
-    if (!existsSync(resolved) || !statSync(resolved).isFile()) {
-      throw new Error(`invalid SOPHIA_KERNEL executable: ${resolved}`);
-    }
-    return resolved;
+    const resolved = targetPath.resolve(explicit);
+    return platform === "win32" && targetPath.extname(resolved) === ""
+      ? [resolved, `${resolved}.exe`]
+      : [resolved];
   }
-  const candidate = path.join(repoRoot, "libexec", "sophia-kernel");
-  return existsSync(candidate) && statSync(candidate).isFile() ? candidate : null;
+  const base = targetPath.join(repoRoot, "libexec", "sophia-kernel");
+  return platform === "win32" ? [`${base}.exe`, base] : [base];
+}
+
+function bundledKernel(repoRoot: string): string | null {
+  const candidates = sophiaKernelCandidates(repoRoot);
+  for (const candidate of candidates) {
+    if (existsSync(candidate) && statSync(candidate).isFile()) return candidate;
+  }
+  if (process.env.SOPHIA_KERNEL?.trim()) {
+    throw new Error(`invalid SOPHIA_KERNEL executable: ${path.resolve(process.env.SOPHIA_KERNEL)}`);
+  }
+  return null;
 }
 
 function hasSourceRuntime(repoRoot: string): boolean {
@@ -79,16 +102,33 @@ function validateRepoRoot(value: string): string {
   return root;
 }
 
+/**
+ * Ordered runtime-root candidates for a given frontend location. Extracted
+ * so the compiled-exe layout (runtime root directly beside the binary) is
+ * unit-testable without actually compiling an executable.
+ */
+export function runtimeRootCandidates(
+  execPath: string,
+  sourceLibDir: string,
+  platform: NodeJS.Platform = process.platform,
+): string[] {
+  const targetPath = platform === "win32" ? path.win32 : path.posix;
+  return [
+    targetPath.dirname(execPath),
+    targetPath.resolve(targetPath.dirname(execPath), ".."),
+    targetPath.resolve(sourceLibDir, "../../../../"),
+  ];
+}
+
 export function findRepoRoot(): string {
   const explicit = process.env.SOPHIA_RUNTIME_ROOT || process.env.SOPHIA_REPO_ROOT;
   if (explicit) return validateRepoRoot(explicit);
 
-  // A native/SEA distribution runs from <release>/bin/sophia. Source and
-  // unpacked-JS development still resolve from apps/sophia-tui/src/lib.
-  const candidates = [
-    path.resolve(path.dirname(process.execPath), ".."),
-    path.resolve(__dirname, "../../../../"),
-  ];
+  // A native/SEA distribution runs from <release>/bin/sophia; a compiled
+  // single-file exe sits directly inside its runtime root (agent/ beside the
+  // binary). Source and unpacked-JS development still resolve from
+  // apps/sophia-tui/src/lib.
+  const candidates = runtimeRootCandidates(process.execPath, __dirname);
   for (const candidate of candidates) {
     try {
       return validateRepoRoot(candidate);
@@ -774,16 +814,19 @@ export class CodeBridge extends EventEmitter {
   start(): void {
     if (this.proc) return;
     const kernel = bundledKernel(this.repoRoot);
+    // The bridge contract honors only SOPHIA_PYTHON (never bare PYTHON), so a
+    // narrowed env view is passed; on win32 the resolver may probe `python`
+    // then `py -3` once per process to dodge the Microsoft Store stub.
+    const launch = resolvePythonLaunch({ SOPHIA_PYTHON: process.env.SOPHIA_PYTHON });
     const command =
       this.spawnCommand
       || kernel
-      || process.env.SOPHIA_PYTHON
-      || "python3";
+      || launch.command;
     const args = this.spawnArgs
       ? [...this.spawnArgs]
       : kernel
         ? ["app-bridge"]
-        : ["-P", "-m", "agent.code_bridge"];
+        : [...launch.preArgs, "-P", "-m", "agent.code_bridge"];
     const pyRoot = pythonRoot(this.repoRoot);
     const sourceRuntime = hasSourceRuntime(this.repoRoot);
     this.pendingWrites = [];
@@ -875,9 +918,12 @@ export class CodeBridge extends EventEmitter {
       this.ready = false;
       this.runInFlight = false;
       this.readyEvent = null;
+      const enoentHint = /ENOENT/i.test(err.message) && !kernel
+        ? " (Python not found: install Python 3.11+ from python.org, or set SOPHIA_PYTHON to an interpreter path)"
+        : "";
       this.emit("typed_error", {
         source: "child",
-        message: err.message,
+        message: `${err.message}${enoentHint}`,
         type: "BridgeChildError",
         category: "availability",
         retryable: true,
