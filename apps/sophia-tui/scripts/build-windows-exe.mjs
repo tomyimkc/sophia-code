@@ -118,6 +118,27 @@ function copyTree(source, target) {
  * resolvable without pulling the real devtools stack (and its websocket)
  * into the exe. The stub is only created when the peer is absent.
  */
+/**
+ * slash.ts loads its catalog with createRequire(import.meta.url) — a runtime
+ * resolution bun's bundler cannot see, so the compiled exe tried to resolve
+ * './slash-commands.json' from its virtual root (B:/~BUN/root/) and died
+ * (observed on Windows 11 after the devtools-stub fix). Inline the catalog
+ * as a JSON.parse literal in the dist copy used for compilation. The result
+ * stays valid ESM, so the Node dist/ tree works unchanged too.
+ */
+function inlineSlashCatalog(distDir) {
+  const slashJs = path.join(distDir, "lib", "slash.js");
+  const catalogJson = path.join(distDir, "lib", "slash-commands.json");
+  if (!existsSync(slashJs) || !existsSync(catalogJson)) return;
+  let text = readFileSync(slashJs, "utf8");
+  const needle = 'const catalog = require("./slash-commands.json");';
+  if (!text.includes(needle)) return;
+  const json = readFileSync(catalogJson, "utf8");
+  text = text.replace(needle, `const catalog = JSON.parse(${JSON.stringify(json)});`);
+  writeFileSync(slashJs, text);
+  console.log("inlined dist/lib/slash-commands.json into dist/lib/slash.js for the compiled exe");
+}
+
 function ensureDevtoolsStub() {
   const stubDir = path.join(packageRoot, "node_modules", "react-devtools-core");
   if (existsSync(path.join(stubDir, "package.json"))) return;
@@ -177,6 +198,7 @@ const bunProbe = launcherOnly ? null : spawnSync("bun", ["--version"], { encodin
 const haveBun = bunProbe?.status === 0;
 if (haveBun) {
   console.log(`[3/5] bun ${bunProbe.stdout.trim()}: compiling sophia-tui.exe (${arch})`);
+  inlineSlashCatalog(path.join(packageRoot, "dist"));
   ensureDevtoolsStub();
   run("bun", [
     "build",
