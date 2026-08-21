@@ -126,6 +126,26 @@ function copyTree(source, target) {
  * as a JSON.parse literal in the dist copy used for compilation. The result
  * stays valid ESM, so the Node dist/ tree works unchanged too.
  */
+/**
+ * meow resolves --version by reading package.json up from import.meta.url.
+ * In the compiled exe that URL is bun's virtual root, no package.json is
+ * found, and --version prints an empty line with exit 0 (observed on
+ * Windows 11 after the catalog fix). meow honors an explicit `version`
+ * option, so inject it into the dist copy used for compilation. The Node
+ * dist/ tree is left untouched (its own lookup still works).
+ */
+function injectMeowVersion(distDir) {
+  const entry = path.join(distDir, "index.js");
+  const pkg = JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8"));
+  if (!pkg.version) return;
+  let text = readFileSync(entry, "utf8");
+  const needle = "importMeta: import.meta,";
+  if (!text.includes(needle) || text.includes(`version: "${pkg.version}",`)) return;
+  text = text.replace(needle, `version: ${JSON.stringify(pkg.version)}, ${needle}`, 1);
+  writeFileSync(entry, text);
+  console.log(`injected meow version ${pkg.version} into dist/index.js for the compiled exe`);
+}
+
 function inlineSlashCatalog(distDir) {
   const slashJs = path.join(distDir, "lib", "slash.js");
   const catalogJson = path.join(distDir, "lib", "slash-commands.json");
@@ -199,6 +219,7 @@ const haveBun = bunProbe?.status === 0;
 if (haveBun) {
   console.log(`[3/5] bun ${bunProbe.stdout.trim()}: compiling sophia-tui.exe (${arch})`);
   inlineSlashCatalog(path.join(packageRoot, "dist"));
+  injectMeowVersion(path.join(packageRoot, "dist"));
   ensureDevtoolsStub();
   run("bun", [
     "build",
