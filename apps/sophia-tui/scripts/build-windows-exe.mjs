@@ -109,6 +109,42 @@ function copyTree(source, target) {
   }
 }
 
+/**
+ * ink's reconciler imports react-devtools-core only when DEV=true, inside a
+ * try/catch — but a bun --compile binary with the specifier left --external
+ * fails to resolve it eagerly at startup (observed on Windows 11: "Cannot
+ * find package 'react-devtools-core' from 'B:/~BUN/root/sophia-tui.exe'",
+ * exit 1 before --version). Bundling a no-op stub keeps the optional peer
+ * resolvable without pulling the real devtools stack (and its websocket)
+ * into the exe. The stub is only created when the peer is absent.
+ */
+function ensureDevtoolsStub() {
+  const stubDir = path.join(packageRoot, "node_modules", "react-devtools-core");
+  if (existsSync(path.join(stubDir, "package.json"))) return;
+  mkdirSync(stubDir, { recursive: true });
+  writeFileSync(
+    path.join(stubDir, "package.json"),
+    `${JSON.stringify({
+      name: "react-devtools-core",
+      version: "0.0.0-sophia-stub",
+      private: true,
+      main: "index.js",
+    }, null, 2)}\n`,
+  );
+  writeFileSync(
+    path.join(stubDir, "index.js"),
+    [
+      "// Sophia build stub: ink only reaches this optional peer when DEV=true;",
+      "// a no-op keeps bun --compile resolvable without the real devtools stack.",
+      "module.exports = {",
+      "  initialize() {},",
+      "  connectToDevTools() {},",
+      "};",
+      "",
+    ].join("\n"),
+  );
+}
+
 function humanSize(bytes) {
   return bytes > 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB`;
 }
@@ -141,14 +177,11 @@ const bunProbe = launcherOnly ? null : spawnSync("bun", ["--version"], { encodin
 const haveBun = bunProbe?.status === 0;
 if (haveBun) {
   console.log(`[3/5] bun ${bunProbe.stdout.trim()}: compiling sophia-tui.exe (${arch})`);
-  // --external: ink's devtools integration optional-imports
-  // react-devtools-core behind a guard; the bundler must not try to resolve
-  // it (it is not installed and Ink catches the runtime failure).
+  ensureDevtoolsStub();
   run("bun", [
     "build",
     "--compile",
     `--target=bun-windows-${arch}`,
-    "--external=react-devtools-core",
     "--outfile",
     path.join(outDir, "sophia-tui.exe"),
     path.join(packageRoot, "dist", "index.js"),
@@ -289,7 +322,15 @@ if (wantZip) {
     });
     if (zipped.status !== 0) fail(`zip failed with status ${zipped.status}`);
   } else {
-    console.log(`zip(1) not found; folder is ready at ${outDir} — compress it yourself.`);
+    // bsdtar (Windows 10+, macOS) writes zip archives via -a by extension.
+    console.log(`zip(1) not found; using tar -a → ${zipTarget}`);
+    const zipped = spawnSync("tar", ["-a", "-cf", zipName, path.basename(outDir)], {
+      cwd: path.dirname(outDir),
+      stdio: "inherit",
+    });
+    if (zipped.status !== 0) {
+      console.log(`tar -a also failed; folder is ready at ${outDir} — compress it yourself.`);
+    }
   }
 }
 
